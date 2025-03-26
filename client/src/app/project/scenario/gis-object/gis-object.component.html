@@ -1,0 +1,123 @@
+<p mat-dialog-title class="title">Battlefield Object</p>
+<div class="object-type-img"><img [src]="(selectedObjectType != undefined)?selectedObjectType.picBase64:''" /></div>
+<div mat-dialog-content class="dialog-frame">
+  <form [formGroup]="gisObjectForm" class="form-field-full">
+    <mat-tab-group dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label>{{"General"|translate}}</ng-template>
+        <div class="row tab-context">
+          <div class="col-lg-6">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'Name'|translate}}</mat-label>
+              <input matInput placeholder="{{'Name'|translate}}" formControlName="name" required>
+              @if (gisObjectForm.get('name')?.invalid) {
+              <mat-error>Please enter name</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6">
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select (selectionChange)="slelectCategory($event)" formControlName="selectedCategory_id"
+                [disabled]="layerType == 'polyline'">
+                <mat-option>-- None --</mat-option>
+                @for (item of categories; track $index) {
+                <mat-option value={{item.id}}>{{item.name}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6">
+            <mat-form-field appearance="outline">
+              <mat-label>Object Type</mat-label>
+              <mat-select required formControlName="ObjectType_id" required
+                (selectionChange)="selectObjectType($event)">
+                <mat-option>-- None --</mat-option>
+                @for (item of objectTypes; track $index) {
+                <mat-option value={{item.id}}>
+                  <div class="item-select">
+                    <span class="selectItem">{{item.name}}</span>
+                    <img class="icon-in-select" [src]="item.iconBase64" />
+                  </div>
+                </mat-option>
+                }
+              </mat-select>
+              @if (gisObjectForm.get('ObjectType')?.invalid) {
+              <mat-error>Please enter a Object Type.</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+      <form [formGroup]="metaDataForm">
+        @for(tab of tabs;track tab){
+        <mat-tab>
+          <ng-template mat-tab-label>{{tab}}</ng-template>
+          <div class="row tab-context">
+            @for(field of fieldGrouped[tab] ; track field){
+            <div class="col-lg-6">
+              @if (field.fieldType == FieldTypes.String) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <input matInput placeholder="{{field.caption}}" formControlName="{{'field_' + field.id}}">
+              </mat-form-field>
+              }
+              @if (field.fieldType == FieldTypes.ItemList) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <mat-select formControlName="{{'field_' + field.id}}">
+                  <mat-option>-- None --</mat-option>
+                  @for (item of field.listOfValue.split('\n'); track $index) {
+                  <mat-option [value]="item.split(':')[1]">{{item.split(':')[0]}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              }
+              @if (field.fieldType == FieldTypes.ItemListMultiSelect) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <mat-select formControlName="{{'field_' + field.id}}" multiple>
+                  <mat-option>-- None --</mat-option>
+                  @for (item of field.listOfValue.split('\n'); track $index) {
+                  <mat-option [value]="item.split(':')[1]">{{item.split(':')[0]}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              }
+              @if ((field.fieldType == FieldTypes.Integer) ) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <input matInput placeholder="{{field.caption}}" type="number" formControlName="{{'field_' + field.id}}">
+              </mat-form-field>
+              }
+              @if ((field.fieldType == FieldTypes.Double)) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <input matInput placeholder="{{field.caption}}" type="number" step="0.001"
+                  formControlName="{{'field_' + field.id}}">
+              </mat-form-field>
+              }
+              @if ((field.fieldType == FieldTypes.Boolean)) {
+              <mat-checkbox formControlName="{{'field_' + field.id}}">{{field.caption}}</mat-checkbox>
+              }
+              @if ((field.fieldType == FieldTypes.Color)) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{field.caption}}</mat-label>
+                <input matInput placeholder="{{field.caption}}" type="color" 
+                  formControlName="{{'field_' + field.id}}">
+              </mat-form-field>
+              }
+            </div>
+            }
+          </div>
+          <!-- {{fieldGrouped[tab]}} -->
+        </mat-tab>
+        }
+      </form>
+    </mat-tab-group>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close={{save()}} [disabled]="!gisObjectForm.valid">{{'Save'|translate}}</button>
+  <button mat-button mat-dialog-close="">{{"Cancel"|translate}}</button>
+</div>

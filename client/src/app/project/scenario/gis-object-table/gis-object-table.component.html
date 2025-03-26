@@ -1,0 +1,11 @@
+<div class="gis-object-table-container" dir ="rtl">
+  <mtx-grid [data]="list" [columns]="columns" [loading]="isLoading" [columnResizable]="true" [multiSelectable]="false"
+    [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true" [rowStriped]="true" [showToolbar]="true"
+    [toolbarTitle]="'Battlefield object list'" [columnHideable]="false" [columnSortable]="true" [columnPinnable]="true"
+    [expandable]="false" [expansionTemplate]="expansionTpl" [pageOnFront]="true" [showPaginator]="true"
+    [pageSizeOptions]="[5,10,50,100]" [pageIndex]="0" [pageSize]="5" />
+  <ng-template #expansionTpl let-row>
+    {{row.name}}
+  </ng-template>
+ 
+</div>

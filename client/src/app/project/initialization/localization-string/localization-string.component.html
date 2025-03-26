@@ -1,0 +1,57 @@
+<page-header />
+<div class="row">
+    <div class="col-sm-12">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Localization Strings</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup]="lsForm" class="form-field-full">
+                    <mat-form-field appearance="fill">
+                        <mat-label>String Key</mat-label>
+                        <input matInput placeholder="String Key" formControlName="strKey" required>
+                        @if (lsForm.get('strKey')?.invalid) {
+                        <mat-error>Please enter String Key</mat-error>
+                        }
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>String Value</mat-label>
+                        <input matInput placeholder="String Value" formControlName="strValue" required>
+                        @if (lsForm.get('strValue')?.invalid) {
+                        <mat-error>Please enter String Value</mat-error>
+                        }
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Language</mat-label>
+                        <mat-select required formControlName="lang" required>
+                            <mat-option>-- None --</mat-option>
+                            <mat-option value="fa">Persian</mat-option>
+                            <mat-option value="en">English</mat-option>
+                        </mat-select>
+                        @if (lsForm.get('lang')?.invalid) {
+                        <mat-error>Please enter a language.</mat-error>
+                        }
+                    </mat-form-field>
+                    <div class="m-t-8 ">
+                        <button mat-flat-button [disabled]="!lsForm.valid" (click)="save()">Save</button>
+                        <button mat-button class="m-x-8" type="button" (click)="cancel()">Cancel</button>
+                    </div>
+                </form>
+                <div class="table-responsive">
+
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div class="col-sm-12">
+        <mtx-grid [data]="list" [columns]="columns" [loading]="isLoading" [columnResizable]="true"
+            [multiSelectable]="false" [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true"
+            [rowStriped]="true" [showToolbar]="true" [toolbarTitle]="'Data Grid Toolbar'" [columnHideable]="false"
+            [columnSortable]="true" [columnPinnable]="true" [expandable]="false" [expansionTemplate]="expansionTpl"
+            [pageOnFront]="true" [showPaginator]="true" [pageSizeOptions]="[5,10,50,100]" [pageIndex]="0"
+            [pageSize]="5" />
+        <ng-template #expansionTpl let-row>
+            {{row.name}}
+        </ng-template>
+    </div>
+</div>

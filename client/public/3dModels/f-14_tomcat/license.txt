@@ -1,0 +1,11 @@
+Model Information:
+* title:	F-14 TOMCAT
+* source:	https://sketchfab.com/3d-models/f-14-tomcat-082e081ecea94a6aaa8c7bb72ec9136b
+* author:	Ryan.Qin (https://sketchfab.com/Ryan.Qin)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "F-14 TOMCAT" (https://sketchfab.com/3d-models/f-14-tomcat-082e081ecea94a6aaa8c7bb72ec9136b) by Ryan.Qin (https://sketchfab.com/Ryan.Qin) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,90 @@
+{
+  "menu": [
+    {
+      "route": "dashboard",
+      "name": "dashboard",
+      "type": "link",
+      "icon": "dashboard",
+      "badge": {
+        "color": "red-50",
+        "value": "5"
+      },
+      "permissions": {
+        "except": [
+          "ADMIN",
+          "GUEST"
+        ]
+      }
+    },
+    {
+      "route": "map",
+      "name": "map",
+      "type": "link",
+      "icon": "map",
+      "badge": {
+        "color": "red-50",
+        "value": "5"
+      }
+    },
+    {
+      "route": "initialize-setting",
+      "name": "initialize-setting",
+      "type": "sub",
+      "icon": "settings",
+      "label": {
+        "color": "azure-50",
+        "value": "New"
+      },
+      "children": [
+        {
+          "route": "localization-string",
+          "name": "localization-string",
+          "type": "link",
+          "icon": "colorize"
+        }
+      ]
+    },
+    {
+      "route": "model-managment",
+      "name": "model-managment",
+      "type": "sub",
+      "icon": "local_shipping",
+      "label": {
+        "color": "azure-50",
+        "value": "New"
+      },
+      "children": [
+        {
+          "route": "fields",
+          "name": "fields",
+          "type": "link",
+          "icon": "developer_board"
+        },
+        {
+          "route": "objectType",
+          "name": "objectType",
+          "type": "link",
+          "icon": "developer_board"
+        }
+      ]
+    },
+    {
+      "route": "scenario",
+      "name": "scenario",
+      "type": "sub",
+      "icon": "color_lens",
+      "label": {
+        "color": "azure-50",
+        "value": "New"
+      },
+      "children": [
+        {
+          "route": "designBattlefield",
+          "name": "designBattlefield",
+          "type": "link",
+          "icon": "colorize"
+        }
+      ]
+    }
+  ]
+}

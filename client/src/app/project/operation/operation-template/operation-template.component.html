@@ -1,0 +1,16 @@
+<div class="operationContainer">
+    <div id="info">
+        <div>
+            <img class="info-img" [src]="gisObject.objectType.picBase64" />
+        </div>
+        <div >
+            <img src="/images/icons/Bullets-red.png" class="blinking-icon" width="24"/>
+            <span>نام:{{gisObject.name}}</span>
+            <span>زاویه:{{target.theta}}</span>
+            <span>فاصله:{{target.range}}</span>
+            <button>لغو عملیات</button>
+            
+        </div>
+    </div>
+    <div class="operationMap" [id]="getMapId()"></div>
+</div>

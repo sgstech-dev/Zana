@@ -1,0 +1,12 @@
+<page-header />
+<div class="row main-row">
+  {{this.gisObjectsAssined.length}}
+  @for (item of gisObjectsAssined; track $index) {
+  <div class="col-lg-3">
+    <app-operation-template [gisObject]=item.gisObject [target]="item.target"></app-operation-template>
+    
+  </div>
+  }
+  
+  {{this.gisObjectsAssined.length}}
+</div>

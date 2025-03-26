@@ -1,0 +1,44 @@
+<div class="map-container">
+    <div id="scenarioMap" dir="ltr">
+      <div id="scenarioSidePanel" class="sidepanel" aria-label="side panel" aria-hidden="false">
+        <div class="sidepanel-inner-wrapper">
+          <nav class="sidepanel-tabs-wrapper" aria-label="sidepanel tab navigation">
+            <ul class="sidepanel-tabs">
+              <li class="sidepanel-tab">
+                <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-1">
+                  <!-- [You can also use images / icons] -->
+                  Battlefield Objects
+                </a>
+              </li>
+              <li class="sidepanel-tab">
+                <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-2">
+                  <!-- [You can also use images / icons] -->
+                  Aircraft Targets
+                </a>
+              </li>
+              <!-- [...] -->
+            </ul>
+          </nav>
+          <div class="sidepanel-content-wrapper">
+            <div class="sidepanel-content">
+              <div class="sidepanel-tab-content" data-tab-content="tab-1">
+                <app-gis-object-table #gisObjectTable [scenario_id]="currentScenario_id" [isAircraft]="false" (flyTo)="flyTo($event)"></app-gis-object-table>
+              </div>
+              <div class="sidepanel-tab-content" data-tab-content="tab-2">
+                <app-gis-object-table #aircraftTable [scenario_id]="currentScenario_id" [isAircraft]="true" (flyTo)="flyTo($event)"></app-gis-object-table>
+              </div>
+              <!-- [...] -->
+            </div>
+          </div>
+        </div>
+        <div class="sidepanel-toggle-container">
+          <button
+            class="sidepanel-toggle-button"
+            type="button"
+            aria-label="toggle side panel"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+</div>

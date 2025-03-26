@@ -1,0 +1,46 @@
+.operationMap {
+    width: 80%;
+    height: 300px;
+    // background-color: red;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+#info {
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    padding-top: 10px;
+}
+
+.info-img {
+    width: 80px;
+    height: 60px;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: black;
+    box-shadow: 1px 1px 4px black;
+}
+
+span {
+    display: block;
+}
+
+.operationContainer {
+    box-shadow: 1px 1px 7px black;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+@keyframes blip {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .blinking-icon {
+    animation: blip 1s infinite;
+  }
+  

@@ -1,0 +1,130 @@
+<page-header />
+<div class="row">
+  <div class="col-sm-12">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Fields</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="fieldForm" class="form-field-full">
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>Category</mat-label>
+                <mat-select required formControlName="category_id" required>
+                  <mat-option >-- None --</mat-option>
+                  @for (item of categories; track $index) {
+                  <mat-option value={{item.id}}>{{item.name}}</mat-option>
+                  }
+                </mat-select>
+                @if (fieldForm.get('category')?.invalid) {
+                <mat-error>Please enter a category.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>OwnerType</mat-label>
+                <mat-select required formControlName="ownerType" required>
+                  <mat-option >-- None --</mat-option>
+                  <mat-option value=0>Object Type</mat-option>
+                  <mat-option value=1>Object</mat-option>
+                </mat-select>
+                @if (fieldForm.get('ownerType')?.invalid) {
+                <mat-error>Please enter a ownerType.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="Name" formControlName="name" required>
+                @if (fieldForm.get('name')?.invalid) {
+                <mat-error>Please enter name</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>Caption</mat-label>
+                <input matInput placeholder="Caption" formControlName="caption" required>
+                @if (fieldForm.get('caption')?.invalid) {
+                <mat-error>Please enter caption</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>Unit</mat-label>
+                <input matInput placeholder="Unit" formControlName="unit">
+                @if (fieldForm.get('unit')?.invalid) {
+                <mat-error>Please enter unit</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>FieldType</mat-label>
+                <mat-select required formControlName="fieldType" required>
+                  <mat-option >-- None --</mat-option>
+                  <mat-option value=0>Integer</mat-option>
+                  <mat-option value=1>String</mat-option>
+                  <mat-option value=2>Boolean</mat-option>
+                  <mat-option value=3>Double</mat-option>
+                  <mat-option value=4>Date Time</mat-option>
+                  <mat-option value=5>Item List</mat-option>
+                  <mat-option value=6>MultiSelectable</mat-option>
+                  <mat-option value=7>Color</mat-option>
+                </mat-select>
+                @if (fieldForm.get('fieldType')?.invalid) {
+                <mat-error>Please enter a fieldType.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6" [hidden]="!((fieldForm.get('fieldType')?.value == 5) || (fieldForm.get('fieldType')?.value == 6)) ">
+              <mat-form-field appearance="outline">
+                <mat-label>List Of Value</mat-label>
+                <textarea matInput placeholder="List Of Value" formControlName="listOfValue"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-6">
+              <mat-form-field appearance="outline">
+                <mat-label>Group</mat-label>
+                <input matInput placeholder="Group" formControlName="group" required>
+                @if (fieldForm.get('group')?.invalid) {
+                <mat-error>Please enter group</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <mat-checkbox formControlName="showInHUD">Show In HUD</mat-checkbox>
+
+          <div class="m-t-8 ">
+            <button mat-flat-button [disabled]="!fieldForm.valid" (click)="save()">{{'save'|translate}}</button>
+            <button mat-button class="m-x-8" type="button" (click)="cancel()">{{"cancel"|translate}}</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-sm-12">
+    <mtx-grid [data]="list" [columns]="columns" [loading]="isLoading" [columnResizable]="true" [multiSelectable]="false"
+      [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true" [rowStriped]="true"
+      [showToolbar]="true" [toolbarTitle]="'Data Grid Toolbar'" [columnHideable]="false" [columnSortable]="true"
+      [columnPinnable]="true" [expandable]="false" [expansionTemplate]="expansionTpl" [pageOnFront]="true"
+      [showPaginator]="true" [pageSizeOptions]="[5,10,50,100]" [pageIndex]="0" [pageSize]="5" />
+    <ng-template #expansionTpl let-row>
+      {{row.name}}
+    </ng-template>
+  </div>
+  <ng-template #defaultRecord let-record let-value="value">
+    ADDITIONAL THINGS HERE
+    <span> {{value}} </span>
+  </ng-template>
+</div>

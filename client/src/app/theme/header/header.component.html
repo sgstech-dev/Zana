@@ -1,0 +1,49 @@
+<mat-toolbar>
+  @if (showToggle) {
+    <button mat-icon-button (click)="toggleSidenav.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+
+  @if (showBranding) {
+    <app-branding />
+  }
+
+  <span class="flex-fill"></span>
+  <button mat-icon-button (click)="startScenario()" *ngIf="!getState()">
+    <mat-icon>play_circle_outline</mat-icon>
+  </button>
+  <button mat-icon-button (click)="stopScenario()" *ngIf="getState()">
+    <mat-icon>stop</mat-icon>
+  </button>
+  <div class="row">
+    <div class="col-lg-12">
+      <mat-form-field appearance="outline" class="current-scenario-frame">
+        <mat-label>Current Scenario</mat-label>
+        <mat-select required (selectionChange)="changeScenario()" [(value)]="currentScenario_id">
+          @for (item of scenarios; track $index) {
+          <mat-option value={{item.id}} >{{item.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <button mat-icon-button>
+    <mat-icon>search</mat-icon>
+  </button>
+
+  <app-translate />
+
+  <button mat-icon-button class="hide-small" (click)="toggleFullscreen()">
+    <mat-icon>fullscreen</mat-icon>
+  </button>
+
+  <app-notification class="hide-small" />
+
+  <app-user />
+
+  <button mat-icon-button class="hide-small" (click)="toggleSidenavNotice.emit()">
+    <mat-icon>list</mat-icon>
+  </button>
+</mat-toolbar>
