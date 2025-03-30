@@ -4,6 +4,9 @@ import {
 } from "./chunk-GJ36CECM.js";
 import "./chunk-7MGLFPMK.js";
 import {
+  NG_VALUE_ACCESSOR
+} from "./chunk-5C5M6BN6.js";
+import {
   Overlay,
   OverlayConfig,
   OverlayModule
@@ -11,9 +14,6 @@ import {
 import {
   TemplatePortal
 } from "./chunk-RRYMOHQ3.js";
-import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-5C5M6BN6.js";
 import {
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,

@@ -1,4 +1,8 @@
 import {
+  MatButton,
+  MatButtonModule
+} from "./chunk-O3D5ZRSY.js";
+import {
   Overlay,
   OverlayConfig,
   OverlayModule
@@ -10,10 +14,6 @@ import {
   PortalModule,
   TemplatePortal
 } from "./chunk-RRYMOHQ3.js";
-import {
-  MatButton,
-  MatButtonModule
-} from "./chunk-O3D5ZRSY.js";
 import {
   MatCommonModule
 } from "./chunk-HBP6OA6Q.js";

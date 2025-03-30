@@ -17,7 +17,7 @@ namespace Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -394,6 +394,9 @@ namespace Server.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
+                    b.Property<double>("Range")
+                        .HasColumnType("double precision");
+
                     b.Property<double>("Speed")
                         .HasColumnType("double precision");
 
@@ -405,6 +408,9 @@ namespace Server.Migrations
 
                     b.Property<int>("TargetType")
                         .HasColumnType("integer");
+
+                    b.Property<double>("Theta")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 

@@ -142,7 +142,7 @@ namespace Server.Controllers
                 {
                     access_token = tokenString,
                     token_type = "Bearer",
-                    expires_in = 3600 // Expires in seconds (1 hour)
+                    expires_in = 1//3600 // Expires in seconds (1 hour)
                 };
 
                 return Ok(response);
@@ -178,7 +178,7 @@ namespace Server.Controllers
             {
                 access_token = tokenString,
                 token_type = "Bearer",
-                expires_in = 3600 // Expires in seconds (1 hour)
+                expires_in = 1//3600 // Expires in seconds (1 hour)
             };
 
             return Ok(response);
