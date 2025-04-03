@@ -4,10 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PostBuildEvent>cp "$(TargetDir)DefaultSystem.dll" "/home/sgs-developer-1/projects/Zana/OSLP/OperatorSystem/"</PostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../OperatorSystems/OperatorSystems.csproj" />
+    <ProjectReference Include="../OperatorSystems/OperatorSystems.csproj" />
   </ItemGroup>
 
 </Project>

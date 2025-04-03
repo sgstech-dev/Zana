@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.models;
 
@@ -19,4 +20,8 @@ public class Target
     public double Heading { get; set; }
     public double Theta { get; set; }
     public double Range { get; set; }
+    [Required]
+    public int Detector_id{ get; set; }
+    [ForeignKey("Detector_id")]
+    public virtual GisObject? Detector{ get; set; }
 }

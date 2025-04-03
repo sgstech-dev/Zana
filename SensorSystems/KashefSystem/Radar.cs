@@ -12,7 +12,7 @@ namespace KashefSystem;
 public class Radar : SensorSystem
 {
     private ConcurrentDictionary<string, Guid> TargetIds = [];
-    public Radar(IHubContext<Hub> hubContext) : base(hubContext)
+    public Radar(IHubContext<Hub> hubContext,GisObject sensorObject) : base(hubContext,sensorObject)
     {
     }
 
@@ -49,7 +49,8 @@ public class Radar : SensorSystem
                                 Speed = Convert.ToDouble(radarTarget!["Speed"]),
                                 TargetType = TargetType.Real,
                                 SystemTargetId = 0,//radarTarget!["TargetId"].ToString(),
-                                TargetId = TargetIds[radarTarget!["TargetID"].ToString()!]
+                                TargetId = TargetIds[radarTarget!["TargetID"].ToString()!],
+                                Detector_id = m_sensorObject.Id
                             };
                             var targetJson = JsonConvert.DeserializeObject<Target>(
                                  JsonConvert.SerializeObject(target)); // ??????????????

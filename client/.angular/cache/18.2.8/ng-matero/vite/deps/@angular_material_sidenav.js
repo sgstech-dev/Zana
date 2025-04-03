@@ -9,12 +9,6 @@ import {
   trigger
 } from "./chunk-IPQJSEC4.js";
 import {
-  CdkScrollable,
-  CdkScrollableModule,
-  ScrollDispatcher,
-  ViewportRuler
-} from "./chunk-2NPGNF2M.js";
-import {
   ESCAPE,
   FocusMonitor,
   FocusTrapFactory,
@@ -22,6 +16,12 @@ import {
   hasModifierKey
 } from "./chunk-U7VVEHQ6.js";
 import "./chunk-5SQMXRTA.js";
+import {
+  CdkScrollable,
+  CdkScrollableModule,
+  ScrollDispatcher,
+  ViewportRuler
+} from "./chunk-2NPGNF2M.js";
 import "./chunk-X7CATLYX.js";
 import {
   Directionality

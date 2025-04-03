@@ -4,12 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PostBuildEvent>cp "$(TargetDir)SadidSystem.dll" "/home/sgs-developer-1/projects/Zana/OSLP/OperatorSystem/"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../OperatorSystems/OperatorSystems.csproj" />
+    <ProjectReference Include="../OperatorSystems/OperatorSystems.csproj" />
   </ItemGroup>
 
 </Project>

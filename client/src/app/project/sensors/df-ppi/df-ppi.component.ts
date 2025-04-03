@@ -1,31 +1,32 @@
-import { AfterViewInit, Component, Input, numberAttribute, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, numberAttribute, OnInit, ViewChild } from '@angular/core';
 import { randomUUID, UUID } from 'crypto';
 import * as L from 'leaflet';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
-  selector: 'app-radar-ppi',
+  selector: 'app-df-ppi',
   standalone: true,
   imports: [],
-  templateUrl: './radar-ppi.component.html',
-  styleUrl: './radar-ppi.component.scss'
+  templateUrl: './df-ppi.component.html',
+  styleUrl: './df-ppi.component.scss'
 })
-export class RadarPPIComponent implements OnInit, AfterViewInit {
+export class DfPPIComponent implements OnInit, AfterViewInit {
   @Input({ required: true, transform: numberAttribute }) centerLat: number;
   @Input({ required: true, transform: numberAttribute }) centerLng: number;
   @Input({ required: true, transform: numberAttribute }) radius: number;
   @Input({ required: true})sensorName: string;
+  @Input({ required: true})color: string = "red";
+
   mapId: UUID = uuidv4();
   private center: L.LatLng;
   private map: L.Map;
+  
 
   constructor() { }
   ngAfterViewInit(): void {
     this.center = L.latLng(this.centerLat, this.centerLng);
     this.initializeMap();
     this.drawPPIAxis(this.radius);
-    this.drawFadingCircle(32, 54.1);
-    this.drawFadingCircle(30.5, 57.8);
   }
   ngOnInit(): void {
 
@@ -138,26 +139,31 @@ export class RadarPPIComponent implements OnInit, AfterViewInit {
   }
 
   public addBlip(lat:number, lng:number){
-    this.drawFadingCircle(lat, lng);
+    this.drawFadingLine(lat, lng);
   }
 
-  private drawFadingCircle(lat, lng, radius = 5) {
+  public addDirection(theta:number, range:number=this.radius){
+    const point = this.destinationPoint(this.centerLat,this.centerLng,range,theta);
+    this.drawFadingLine(point[0], point[1]);
+  }
+
+  private drawFadingLine(lat, lng) {
     // Create a circle with full opacity
-    let circle = L.circle([lat, lng], {
-      radius: radius,  // Radius in meters
-      color: "red",    // Border color
-      fillColor: "red", // Fill color
+    let line = L.polyline([[lat, lng],[this.centerLat,this.centerLng]], {
+      color: this.color,    // Border color
+      
+      fillColor: this.color, // Fill color
       fillOpacity: 1   // Initially fully visible
     }).addTo(this.map);
 
     let opacity = 1;
     let fadeInterval = setInterval(() => {
       opacity -= 0.01; // Reduce opacity gradually
-      circle.setStyle({ fillOpacity: Math.max(opacity, 0), opacity: Math.max(opacity, 0) });
+      line.setStyle({ fillOpacity: Math.max(opacity, 0), opacity: Math.max(opacity, 0) });
 
       if (opacity <= 0) {
         clearInterval(fadeInterval); // Stop fading
-        this.map.removeLayer(circle); // Remove from map
+        this.map.removeLayer(line); // Remove from map
       }
     }, 50); // Reduce opacity every 500ms (total 5s)
   }

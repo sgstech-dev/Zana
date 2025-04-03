@@ -117,4 +117,7 @@ public class ClientHub : Client
             .Where(o=>o.Id == objectType_id)
             .Select(o=>o.Model).FirstOrDefault()!;
     }
+    public void sendTargetInfo(string SerialNumber){
+        Console.WriteLine("The Target SerialNo : ", SerialNumber);
+    }
 }

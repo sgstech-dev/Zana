@@ -1,7 +1,6 @@
 import {
   DomSanitizer
 } from "./chunk-65H4I3RJ.js";
-import "./chunk-6FVM5ZDU.js";
 import {
   animate,
   state,
@@ -9,6 +8,7 @@ import {
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import "./chunk-6FVM5ZDU.js";
 import {
   DOCUMENT,
   NgIf

@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../DataModels/DataModels.csproj" />
-    <ProjectReference Include="../OperatorSystems/OperatorSystems.csproj" />
+    <ProjectReference Include="../OperatorSystems/OperatorSystems/OperatorSystems.csproj" />
     <ProjectReference Include="../SensorSystems/SensorSystems/SensorSystems.csproj" />
     <ProjectReference Include="../Tools/Tools.csproj" />
   </ItemGroup>

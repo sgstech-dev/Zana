@@ -1,12 +1,12 @@
 import {
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader
+} from "./chunk-U7VVEHQ6.js";
+import {
   CdkScrollableModule,
   ScrollDispatcher,
   ViewportRuler
 } from "./chunk-2NPGNF2M.js";
-import {
-  isFakeMousedownFromScreenReader,
-  isFakeTouchstartFromScreenReader
-} from "./chunk-U7VVEHQ6.js";
 import {
   Directionality
 } from "./chunk-SWKTGBAV.js";
@@ -3878,4 +3878,4 @@ export {
   CdkDragPlaceholder,
   DragDropModule
 };
-//# sourceMappingURL=chunk-RDBZ6L3N.js.map
+//# sourceMappingURL=chunk-YPO43JZN.js.map

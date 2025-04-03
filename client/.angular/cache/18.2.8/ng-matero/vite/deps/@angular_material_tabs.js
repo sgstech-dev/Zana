@@ -19,10 +19,6 @@ import {
   trigger
 } from "./chunk-IPQJSEC4.js";
 import {
-  CdkScrollable,
-  ViewportRuler
-} from "./chunk-2NPGNF2M.js";
-import {
   CdkMonitorFocus,
   CdkObserveContent,
   ENTER,
@@ -32,6 +28,10 @@ import {
   hasModifierKey
 } from "./chunk-U7VVEHQ6.js";
 import "./chunk-5SQMXRTA.js";
+import {
+  CdkScrollable,
+  ViewportRuler
+} from "./chunk-2NPGNF2M.js";
 import "./chunk-X7CATLYX.js";
 import {
   Directionality

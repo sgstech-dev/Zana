@@ -71,7 +71,7 @@ public class SensorService
                 }
             }
             if (IsSensor){
-                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll",_hubContext);
+                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll",_hubContext,gisObject);
                 if (sensorSystem != null)
                 {
                     SensorSystems[gisObject.Id] = sensorSystem;
