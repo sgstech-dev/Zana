@@ -10,13 +10,14 @@ public abstract class SensorSystem
     public event TargetDetected? OnTargetDetected;
     private ConcurrentDictionary<string, Guid> TargetIds = [];
     private IHubContext<Hub> m_hubContext;
-    protected GisObject m_sensorObject;
+    private GisObject m_sensorObject;
     public SensorSystem(IHubContext<Hub> hubContext,GisObject sensorObject){
         m_hubContext = hubContext;
         m_sensorObject = sensorObject;
     }
     public abstract Task Listen();
     protected Task sendToClient(Target target){
+        target.Detector_id = m_sensorObject.Id;
         if(OnTargetDetected != null){
             OnTargetDetected(this,target);
         }

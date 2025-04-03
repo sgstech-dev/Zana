@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Microsoft.AspNetCore.SignalR;
@@ -7,12 +6,11 @@ using Newtonsoft.Json;
 using SensorSystems;
 using Server.models;
 
-namespace KashefSystem;
+namespace MonirSystem;
 
-public class Radar : SensorSystem
+public class SoundSensor : SensorSystem
 {
-    private ConcurrentDictionary<string, Guid> TargetIds = [];
-    public Radar(IHubContext<Hub> hubContext,GisObject sensorObject) : base(hubContext,sensorObject)
+    public SoundSensor(IHubContext<Hub> hubContext, GisObject sensorObject) : base(hubContext, sensorObject)
     {
     }
 
@@ -20,7 +18,7 @@ public class Radar : SensorSystem
     {
         try
         {
-            UdpClient udpListener = new UdpClient(51233);
+            UdpClient udpListener = new UdpClient(8037);
             var isRun = true;
             _ = Task.Run(async () =>
             {
@@ -36,22 +34,21 @@ public class Radar : SensorSystem
                         string receivedString = Encoding.UTF8.GetString(receivedData);
                         Console.WriteLine("Received data: " + receivedString);
                         var radarTarget = JsonConvert.DeserializeObject<Dictionary<string, Object>>(receivedString)!;
+                        //{"sound_pan": 313.9966570219482, "sound_tilt": 72.43361945274751, "sound_validation": 1, "sound_time": "2025-03-15-13-04-00-887062", "sound_power": null, "2th_pan": null, "2th_tilt": null, "2th_range": null, "2th_time": null}
                         if (radarTarget != null)
                         {
-                            if (!TargetIds.ContainsKey(radarTarget!["TargetID"].ToString()!))
-                                TargetIds[radarTarget!["TargetID"].ToString()!] = Guid.NewGuid();
                             Target target = new Target
                             {
-                                Altitude = Convert.ToDouble(radarTarget!["Alt"]),
-                                Heading = 0,//radarTarget!.Heading,
-                                Latitude = Convert.ToDouble(radarTarget!["Lat"]),
-                                Longitude = Convert.ToDouble(radarTarget!["Lng"]),
-                                Speed = Convert.ToDouble(radarTarget!["Speed"]),
+                                Theta = Convert.ToDouble(radarTarget!["sound_pan"]),
+                                Elevation = Convert.ToDouble(radarTarget!["sound_tilt"]),
+                                DetectedTime = Convert.ToDateTime(radarTarget!["sound_time"]),
                                 TargetType = TargetType.Real,
                                 SystemTargetId = 0,//radarTarget!["TargetId"].ToString(),
-                                TargetId = TargetIds[radarTarget!["TargetID"].ToString()!],
+                                TargetId = Guid.Empty,
                             };
-                            await sendToClient(target);
+                            var targetJson = JsonConvert.DeserializeObject<Target>(
+                                 JsonConvert.SerializeObject(target)); // ??????????????
+                            await sendToClient(targetJson);
                         }
                     }
                     catch (Exception ex)
