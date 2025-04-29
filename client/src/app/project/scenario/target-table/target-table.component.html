@@ -1,0 +1,11 @@
+<div class="target-table-container" dir="rtl">
+  <mtx-grid [data]="list" [columns]="columns" [loading]="false" [columnResizable]="true" [multiSelectable]="false"
+    [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true" [rowStriped]="true" [showToolbar]="true"
+    [toolbarTitle]="" [columnHideable]="false" [columnSortable]="true" [columnPinnable]="true"
+    [expandable]="true" [noResultText]="'Ther is not detected any targets.'" [expansionTemplate]="expansionTpl"
+    [pageOnFront]="true" [showPaginator]="false" [pageSize]="5" />
+  <ng-template #expansionTpl let-row>
+    {{row.name}}
+  </ng-template>
+
+</div>

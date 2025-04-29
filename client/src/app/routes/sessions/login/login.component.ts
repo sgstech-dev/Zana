@@ -12,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 
 import { AuthService } from '@core/authentication';
+import { MenuService, StartupService, StartupServiceFactory } from '@core';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,6 @@ import { AuthService } from '@core/authentication';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -35,12 +35,13 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly startup = inject(StartupService);
 
   isSubmitting = false;
 
   loginForm = this.fb.nonNullable.group({
-    username: ['test', [Validators.required]],
-    password: ['password', [Validators.required]],
+    username: ['admin', [Validators.required]],
+    password: ['admin', [Validators.required]],
     rememberMe: [false],
   });
 
@@ -64,17 +65,30 @@ export class LoginComponent {
       .pipe(filter(authenticated => authenticated))
       .subscribe({
         next: () => {
-          this.router.navigateByUrl('/');
+          this.auth.change()
+            .subscribe(() => {
+              window.location.replace('/');
+                // this.router.navigateByUrl('/').then(()=>{
+                //   let loadInterval = setInterval(()=>{
+                //     this.startup.load();
+                //     clearInterval(loadInterval);
+                //     console.log("Load was happen");
+                //   },5000);
+                  
+                // });
+            });
         },
         error: (errorRes: HttpErrorResponse) => {
-          if (errorRes.status === 422) {
-            const form = this.loginForm;
-            const errors = errorRes.error.errors;
-            Object.keys(errors).forEach(key => {
-              form.get(key === 'email' ? 'username' : key)?.setErrors({
-                remote: errors[key][0],
-              });
-            });
+          //if (errorRes.status === 422) {
+          if (errorRes.status === 401) {
+            // const form = this.loginForm;
+            // const errors = errorRes.error.errors;
+            // Object.keys(errors).forEach(key => {
+            //   form.get(key === 'email' ? 'username' : key)?.setErrors({
+            //     remote: errors[key][0],
+            //   });
+            //});
+            alert("Login Failed!");
           }
           this.isSubmitting = false;
         },

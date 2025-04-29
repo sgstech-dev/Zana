@@ -151,5 +151,21 @@
   "cancel": "انصراف",
   "new": "جدید",
   "state": "وضعیت",
-  "icon": "نشانه"
+  "icon": "نشانه",
+  "range": "Range",
+  "theta": "Azimuth",
+  "elevation":"Elevation",
+  "lat":"Latitude",
+  "lng":"Longitude",
+  "alt":"Altitude",
+  "detectedTime":"زمان وقوع",
+  "distance":"فاصله",
+  "centerFreq": "فرکانس",
+  "bandWidth": "پهنای باند",
+  "snr":"SNR",
+  "deviceType": "نوع ریز پرنده",
+  "targetSerialNo":"شماره سریال هدف",
+  "enableHunted":"در اختیار گیری",
+  "gisObjects": "منابع عملیاتی",
+  "detectors": "کشف کننده  اهداف"
 }

@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PostBuildEvent>cp "$(TargetDir)MonirSystem.dll" "/home/sgs-developer-1/projects/Zana/OSLP/SensorSystem/"</PostBuildEvent>
+    <PostBuildEvent>cp "$(TargetDir)MonirSystem.dll" "../../../../../OSLP/SensorSystem/"</PostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>

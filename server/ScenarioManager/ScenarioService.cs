@@ -81,9 +81,10 @@ public class ScenarioService : IScenarioService
                             Latitude=result.targetState!.Latitude,
                             Longitude=result.targetState!.Longitude,
                             Speed = result.targetState!.Speed,
-                            TargetType=TargetType.Simulation,
+                            TargetType=TargetType.Position,
+                            Simulated= true,
                             SystemTargetId=result.targetState!.GisObjectId,
-                            TargetId=ScenarioTargetIds[scenario_id][target.Id]
+                            TargetId=ScenarioTargetIds[scenario_id][target.Id].ToString(),
                             };
                         _decisionBuilder.UpdateState(simulatedtarget);
                         _decisionBuilder.MakeDecision();

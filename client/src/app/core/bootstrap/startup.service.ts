@@ -43,7 +43,9 @@ export class StartupService {
     const permissions = ['canAdd', 'canDelete', 'canEdit', 'canRead'];
     this.permissonsService.loadPermissions(permissions);
     this.rolesService.flushRoles();
-    this.rolesService.addRoles({ ADMIN: permissions });
+    user.roles.forEach(element => {
+      this.rolesService.addRoles({[element]:permissions});  
+    });
 
     // Tips: Alternatively you can add permissions with role at the same time.
     // this.rolesService.addRolesWithPermissions({ ADMIN: permissions });

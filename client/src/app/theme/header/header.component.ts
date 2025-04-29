@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, EventEmitter, Input, numberAttribute, OnInit, Output, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, inject, Input, numberAttribute, OnInit, Output, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -15,6 +15,8 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { Scenario, ScenarioService } from 'app/project/services/scenario.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { HubConnectionState } from '@microsoft/signalr';
+import { AuthService } from '@core/authentication/auth.service';
+import { User } from '@core/authentication/interface';
 
 @Component({
   selector: 'app-header',
@@ -30,7 +32,6 @@ import { HubConnectionState } from '@microsoft/signalr';
     MatButtonModule,
     MatIconModule,
     BrandingComponent,
-    GithubButtonComponent,
     NotificationComponent,
     TranslateComponent,
     UserComponent,
@@ -40,6 +41,8 @@ import { HubConnectionState } from '@microsoft/signalr';
   ],
 })
 export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit {
+
+  user: User;
   currentScenario_id: string;
   public scenarios: Scenario[] = [];
   isPlayed: Map<number, boolean> = new Map<number, boolean>();
@@ -49,8 +52,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
 
   @Output() toggleSidenav = new EventEmitter<void>();
   @Output() toggleSidenavNotice = new EventEmitter<void>();
-
-  constructor(private scenarioService: ScenarioService) { }
+  readonly auth = inject(AuthService);
+  constructor(
+    private scenarioService: ScenarioService
+  ) { }
   ngAfterContentInit(): void {
 
   }
@@ -59,6 +64,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
   }
   ngOnInit(): void {
     this.loadScenariosData();
+  //  this.authService.user().subscribe(user => (this.user = user));
   }
 
   toggleFullscreen() {

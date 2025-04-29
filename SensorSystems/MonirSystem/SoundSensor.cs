@@ -11,62 +11,79 @@ namespace MonirSystem;
 
 public class SoundSensor : SensorSystem
 {
-    public SoundSensor(IHubContext<Hub> hubContext, GisObject sensorObject) : base(hubContext, sensorObject)
+    public SoundSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port) : base(hubContext, sensorObject, IpAddress, Port)
     {
+
     }
 
     public override Task Listen()
     {
-        try
+        var listener = new HttpListener();
+        listener.Prefixes.Add($"http://+:{m_port}/" );
+        listener.Start();
+        return Task.Run(async () =>
         {
-            UdpClient udpListener = new UdpClient(8037);
-            var isRun = true;
-            _ = Task.Run(async () =>
+            while (true)
             {
-                while (isRun)
+                HttpListenerContext context = await listener.GetContextAsync(); HttpListenerRequest request = context.Request;
+                var clientIp = context.Request.RemoteEndPoint?.Address.ToString();
+                Console.WriteLine($"The client with ip address {clientIp} was connected.");
+                Console.WriteLine($"Method: {request.HttpMethod}");
+                Console.WriteLine($"URL: {request.Url}");
+                // فقط اگر POST بود            
+                if (m_ipAddress.Contains(clientIp!.Trim()) && (request.HttpMethod == "POST"))
                 {
-                    try
+                    using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
                     {
-                        // Receive data from UDP client
-                        IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                        byte[] receivedData = udpListener.Receive(ref remoteEndPoint);
-
-                        // Convert bytes to string
-                        string receivedString = Encoding.UTF8.GetString(receivedData);
-                        Console.WriteLine("Received data: " + receivedString);
-                        var radarTarget = JsonConvert.DeserializeObject<Dictionary<string, Object>>(receivedString)!;
-                        //{"sound_pan": 313.9966570219482, "sound_tilt": 72.43361945274751, "sound_validation": 1, "sound_time": "2025-03-15-13-04-00-887062", "sound_power": null, "2th_pan": null, "2th_tilt": null, "2th_range": null, "2th_time": null}
-                        if (radarTarget != null)
+                        string body = await reader.ReadToEndAsync();
+                        Console.WriteLine("POST Body: " + body);
+                        var radarTarget = JsonConvert.DeserializeObject<Dictionary<string, Object>>(body)!;
+                       // if (radarTarget.ContainsKey("radarTarget"))
                         {
-                            string trimmedInput = radarTarget!["sound_time"].ToString()!.Substring(0, 23); // "2025-03-15-13-04-00-887"
-                            string format = "yyyy-MM-dd-HH-mm-ss-fff";
-
-                            DateTime dt = DateTime.ParseExact(trimmedInput, format, CultureInfo.InvariantCulture);
-                            Target target = new Target
+                            if (radarTarget != null)
                             {
-                                Theta = Convert.ToDouble(radarTarget!["sound_pan"]),
-                                Elevation = Convert.ToDouble(radarTarget!["sound_tilt"]),
-                                DetectedTime = dt,
-                                TargetType = TargetType.Real,
-                                SystemTargetId = 0,//radarTarget!["TargetId"].ToString(),
-                                TargetId = Guid.Empty,
-                            };
-                            var targetJson = JsonConvert.DeserializeObject<Target>(
-                                 JsonConvert.SerializeObject(target)); // ??????????????
-                            await sendToClient(targetJson);
+                                string trimmedInput = radarTarget!["sound_time"].ToString()!.Substring(0, 23); // "2025-03-15-13-04-00-887"
+                                string format = "yyyy-MM-dd-HH-mm-ss-fff";
+
+                                DateTime dt = DateTime.ParseExact(trimmedInput, format, CultureInfo.InvariantCulture);
+                                Target target = new Target
+                                {
+                                    Theta = Convert.ToDouble(radarTarget!["sound_pan"]),
+                                    Elevation = Convert.ToDouble(radarTarget!["sound_tilt"]),
+                                    DetectedTime = dt,
+                                    TargetType = TargetType.Direction,
+                                    Simulated = false,
+                                    SystemTargetId = 0,
+                                    TargetId = Guid.Empty.ToString(),
+                                    Detector_id = m_sensorObject.Id,
+                                    Detector = m_sensorObject
+                                };
+                                Console.WriteLine(target);
+                                if (m_enableRelay)
+                                    Relay(body);
+                                sendToClient(target).Wait();
+                            }
                         }
+
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error: " + ex.Message);
-                    }
+                    // پاسخ به درخواست                
+                    string responseString = "Received POST!";
+                    byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+                    context.Response.ContentLength64 = buffer.Length;
+                    await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                    context.Response.Close();
                 }
-            });
-        }
-        catch (Exception error)
-        {
-            Console.WriteLine("An error was occurred! : " + error.Message);
-        }
-        return Task.CompletedTask;
+                else
+                {
+                    context.Response.StatusCode = 405;
+                    // // Method Not Allowed   
+                    context.Response.Close();
+                }
+            }
+        });
+    }
+    protected override void Relay(string jasonData)
+    {
+        base.Relay(jasonData);
     }
 }

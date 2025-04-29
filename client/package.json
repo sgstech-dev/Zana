@@ -64,6 +64,7 @@
     "leaflet-switch-basemap": "^1.0.6",
     "leaflet-toolbar": "^0.4.0-alpha.2",
     "leaflet.marker.highlight": "^0.0.3",
+    "leaflet.mouseposition.ts": "^0.1.3",
     "leaflet.sidepanel": "^1.2.1",
     "moment": "^2.30.1",
     "ng-new-files-uploader": "^1.0.0",

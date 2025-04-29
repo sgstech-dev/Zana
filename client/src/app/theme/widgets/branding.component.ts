@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { AuthService } from '@core';
 
 @Component({
   selector: 'app-branding',
   template: `
+  @if (auth.getPermision('header-logo')) {
     <a class="branding" href="/">
       <img src="images/matero.png" class="branding-logo" alt="logo" />
       @if (showName) {
@@ -11,6 +13,7 @@ import { Component, Input } from '@angular/core';
         </div>
       }
     </a>
+  }
   `,
   styles: `
     .branding {
@@ -38,5 +41,6 @@ import { Component, Input } from '@angular/core';
   standalone: true,
 })
 export class BrandingComponent {
+  readonly auth = inject(AuthService);
   @Input() showName = false;
 }

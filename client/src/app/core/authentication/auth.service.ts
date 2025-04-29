@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   logout() {
-    return this.loginService.logout().pipe(
+    return this.loginService.logout(filterObject({ refresh_token: this.tokenService.getRefreshToken() })).pipe(
       tap(() => this.tokenService.clear()),
       map(() => !this.check())
     );
@@ -59,6 +59,13 @@ export class AuthService {
 
   user() {
     return this.user$.pipe(share());
+  }
+
+  getPermision(permision: string) {
+    if (this.user$.getValue().permissions)
+      return !(this.user$.getValue().permissions.findIndex(p => p == permision) < 0);
+    else
+      return false;
   }
 
   menu() {
@@ -74,6 +81,20 @@ export class AuthService {
       return of(this.user$.getValue());
     }
 
-    return this.loginService.me().pipe(tap(user => this.user$.next(user)));
+    return this.loginService
+      .me(filterObject({ refresh_token: this.tokenService.getRefreshToken() }))
+      .pipe(
+        catchError(() => {
+          this.tokenService.clear();
+          return of(null); // returning null or empty object, depending on your expected type
+        }),
+        tap(user => {
+          if (user)
+            this.user$.next(user);
+          else {
+            this.tokenService.clear();
+          }
+        })
+      );
   }
 }

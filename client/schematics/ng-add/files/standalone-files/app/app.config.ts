@@ -53,7 +53,7 @@ export const appConfig: ApplicationConfig = {
     // ==================================================
     // 👇 ❌ Remove it in the realworld application
     //
-    { provide: LoginService, useClass: FakeLoginService },
+    //{ provide: LoginService, useClass: FakeLoginService },
     //
     // ==================================================
     httpInterceptorProviders,

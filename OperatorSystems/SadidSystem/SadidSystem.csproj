@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PostBuildEvent>cp "$(TargetDir)SadidSystem.dll" "/home/sgs-developer-1/projects/Zana/OSLP/OperatorSystem/"</PostBuildEvent>
+    <PostBuildEvent>cp "$(TargetDir)SadidSystem.dll" "../../../../../OSLP/OperatorSystem/"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />

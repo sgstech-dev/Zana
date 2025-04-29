@@ -8,6 +8,7 @@ using WebSocketsSample.MoonSocket;
 using Server.ScenarioManager;
 using Server.DecisionService;
 using Server.SensorManager;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -38,8 +39,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          string[] origins = ["http://127.0.0.1:4200", "http://127.0.0.1", "http://localhost", "http://192.168.100.69"];
-
+                          string[] origins = configuration.GetSection("Appsettings:AllowClients").Get<string[]>()!;
                           policy.WithOrigins(origins).AllowAnyHeader()
                                                   // policy.WithOrigins("*").AllowAnyHeader()
                                                   .AllowAnyMethod()
@@ -50,37 +50,39 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.AddNpgsqlDbContext<WGDBContext>("WGDBConnection");
+builder.Services.AddSingleton<SensorService>();
+
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Add MoonSocket Service
 builder.Services.AddScoped<IMoonContext, MoonContext<ClientHub>>();
 builder.Services.AddSingleton<IMoonContext, MoonContext<ClientHub>>(provider =>
 {
-    // var dbContext = provider.GetRequiredService<WGDBContext>();
-    return new MoonContext<ClientHub>();
+    var hubContext = provider.GetRequiredService<IHubContext<ServerHub>>();
+    return new MoonContext<ClientHub>(hubContext);
 });
+
 
 builder.Services.AddSingleton<WGDBContextFactory>();
 builder.Services.AddScoped<IScenarioService,ScenarioService>();
 builder.Services.AddSingleton<ScenarioService>();
 builder.Services.AddSingleton<DecisionBuilder>();
-builder.Services.AddSingleton<SensorService>();
+
 
 var webSocketOptions = new WebSocketOptions
 {
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
-
+builder.WebHost.UseUrls(configuration["Appsettings:AppURL"]!);
 var app = builder.Build();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 app.UseWebSockets(webSocketOptions);
 app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();

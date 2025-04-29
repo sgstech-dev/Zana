@@ -167,18 +167,6 @@ export class GisObjectTableComponent implements OnInit, AfterViewInit, OnDestroy
           tooltip: this.translate.stream('edit'),
           click: record => this.edit(record),
         },
-        // {
-        //   type: 'icon',
-        //   color: 'warn',
-        //   icon: 'delete',
-        //   tooltip: this.translate.stream('delete'),
-        //   pop: {
-        //     title: this.translate.stream('confirm_delete'),
-        //     closeText: this.translate.stream('close'),
-        //     okText: this.translate.stream('ok'),
-        //   },
-        //   click: (record: GisObject) => this.delete(record.id),
-        // },
       ],
     },
   ]

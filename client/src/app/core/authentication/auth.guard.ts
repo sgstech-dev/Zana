@@ -6,5 +6,7 @@ export const authGuard = (route?: ActivatedRouteSnapshot, state?: RouterStateSna
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  return auth.check() ? true : router.parseUrl('/auth/login');
+  return (auth.check() && (route.routeConfig.path == "" || auth.getPermision("menu:" + route.routeConfig.path)))  ? true : router.parseUrl('/auth/login');
+  //return true;
+
 };

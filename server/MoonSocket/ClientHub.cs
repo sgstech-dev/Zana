@@ -1,14 +1,18 @@
 using System;
 using System.Net.NetworkInformation;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Server;
 using Server.models;
+using Server.SensorManager;
 
 namespace WebSocketsSample.MoonSocket;
 
-struct TargetData{
-            public Object gisObject;
-            public List<GisObjectMetaData> gisObjectMetaData;
-        }
+struct TargetData
+{
+    public Object gisObject;
+    public List<GisObjectMetaData> gisObjectMetaData;
+}
 public class ClientHub : Client
 {
     public string SendMessage(string message)
@@ -23,16 +27,17 @@ public class ClientHub : Client
             .Include(s => s.GisObject)
             .ThenInclude(g => g!.ObjectType)
             .ThenInclude(o => o!.Category)
-            .Where(s => s.GisObject!.Scenario_id == scenario_id 
+            .Where(s => s.GisObject!.Scenario_id == scenario_id
             //&& s.GisObject.ObjectType!.Category!.Key != "aircraft"
             )
             .Select(s => new
             {
-               // Scene = s, // Keep Scene data
+                // Scene = s, // Keep Scene data
                 s.Heading,
                 s.Longitude,
                 s.Latitude,
-                s.Altitude,s.Speed,
+                s.Altitude,
+                s.Speed,
                 GisObject = new
                 {
                     s.GisObject!.Id,
@@ -63,7 +68,7 @@ public class ClientHub : Client
     {
         Console.WriteLine(">>-----------------------------------> " + id);
         TargetData result = new();
-        result.gisObject =  DbContext?.GisObjects
+        result.gisObject = DbContext?.GisObjects
             .Include(g => g!.ObjectType)
             .ThenInclude(c => c!.Category)
             .Where(o => o.Id == id)
@@ -93,31 +98,71 @@ public class ClientHub : Client
                 }
             })
             .FirstOrDefault()!;
-        result.gisObjectMetaData = DbContext?.GisObjectMetaDatas.Where(gmd=>gmd.Object_id == id).Include("Field").ToList()!;
+        result.gisObjectMetaData = DbContext?.GisObjectMetaDatas.Where(gmd => gmd.Object_id == id).Include("Field").ToList()!;
         return result;
     }
     public string getGisPic(Int64 objectType_id)
     {
         var data = DbContext?.ObjectTypes
-            .Where(o=>o.Id == objectType_id)
-            .Select(o=>o.PicBase64).FirstOrDefault();
+            .Where(o => o.Id == objectType_id)
+            .Select(o => o.PicBase64).FirstOrDefault();
         return data?.Split(',')[1]!;
     }
     public string getGisIcon(Int64 objectType_id)
     {
-        
+
         var Data = DbContext?.ObjectTypes
-            .Where(o=>o.Id == objectType_id)
-            .Select(o=>o.IconBase64).FirstOrDefault();
+            .Where(o => o.Id == objectType_id)
+            .Select(o => o.IconBase64).FirstOrDefault();
         return Data?.Split(',')[1]!;
     }
     public byte[] getGisModel(Int64 objectType_id)
     {
         return DbContext?.ObjectTypes
-            .Where(o=>o.Id == objectType_id)
-            .Select(o=>o.Model).FirstOrDefault()!;
+            .Where(o => o.Id == objectType_id)
+            .Select(o => o.Model).FirstOrDefault()!;
     }
-    public void sendTargetInfo(string SerialNumber){
-        Console.WriteLine("The Target SerialNo : ", SerialNumber);
+
+    // Call from Saher System
+    public void threatList(string deviceType, double snr, double angle, double bandWidth, double centerFreq, double distance)
+    {
+        Console.WriteLine("Saher Target ----> Device Type : " + deviceType + " snr:" + snr + " angle:" + angle + " BandWidth:" + bandWidth + " CenterFreq:" + centerFreq + " Distance:" + distance);
+        Target target = new Target();
+        target.DeviceType = deviceType;
+        target.SNR = snr;
+        target.Theta = angle;
+        target.BandWidth = bandWidth;
+        target.CenterFreq = centerFreq;
+        target.Range = distance;
+        target.TargetType = TargetType.Direction;
+        SensorService?.PushData(target,IpAddress);
+    }
+
+    public void jammersAndMotorStatus(bool motor, bool jammer2_4, bool jammer5_8, bool jammer400, bool jammer900, bool jammersGPS, bool autoControl)
+    {
+        Console.WriteLine("Mottor state: " + motor + " Jammer2.4  state: " + jammer2_4 + " Jammer5.8  state: " + jammer5_8 + " Jammer400  state: " + jammer400 + " Jammer900 state: " + jammer900 + " JammerGPS  state: " + jammersGPS + " AutoControl  state: " + autoControl);
+        HubContext.Clients.All.SendAsync("jammersAndMotorStatus", motor, jammer2_4, jammer5_8, jammer400, jammer900, jammersGPS, autoControl).Wait();
+    }
+    //call from Jaber System
+    public void JaberState(bool State)
+    {
+        HubContext.Clients.All.SendAsync("JaberState", State).Wait();
+    }
+
+    public void sendTargetInfo(string UUID, double QuadAlt, string SerialNumber, double QuadLat, double QuadLong, double QuadHeight, double HomeLat, double HomeLong, string Type, double PilotLat, double PilotLong, double QuadSpeedLat, double QuadSpeedHeight, double QuadSpeedLong, string Date, string Time, string User, string Color, bool EnableHunted)
+    {
+        Target target = new Target()
+        {
+            TargetId = SerialNumber,
+            Altitude = QuadAlt,
+            Latitude = QuadLat,
+            Longitude = QuadLong,
+            DetectedTime = DateTime.Now,//باید اصلاح شود
+            DeviceType = Type,
+            Simulated = false,
+            EnableHunted = EnableHunted
+        };
+        
+        SensorService?.PushData(target,IpAddress);
     }
 }

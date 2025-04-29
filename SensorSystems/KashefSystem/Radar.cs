@@ -12,7 +12,7 @@ namespace KashefSystem;
 public class Radar : SensorSystem
 {
     private ConcurrentDictionary<string, Guid> TargetIds = [];
-    public Radar(IHubContext<Hub> hubContext,GisObject sensorObject) : base(hubContext,sensorObject)
+    public Radar(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port) : base(hubContext, sensorObject, IpAddress, Port)
     {
     }
 
@@ -47,9 +47,10 @@ public class Radar : SensorSystem
                                 Latitude = Convert.ToDouble(radarTarget!["Lat"]),
                                 Longitude = Convert.ToDouble(radarTarget!["Lng"]),
                                 Speed = Convert.ToDouble(radarTarget!["Speed"]),
-                                TargetType = TargetType.Real,
+                                TargetType = TargetType.Position,
+                                Simulated = false,
                                 SystemTargetId = 0,//radarTarget!["TargetId"].ToString(),
-                                TargetId = TargetIds[radarTarget!["TargetID"].ToString()!],
+                                TargetId = TargetIds[radarTarget!["TargetID"].ToString()!].ToString(),
                             };
                             await sendToClient(target);
                         }

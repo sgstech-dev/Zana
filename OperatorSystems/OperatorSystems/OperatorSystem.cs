@@ -4,6 +4,7 @@ using Server.models;
 using Microsoft.AspNetCore.SignalR;
 using Server;
 using Server.Tools;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace OperatorSystems
 {
@@ -18,8 +19,8 @@ namespace OperatorSystems
         protected double m_latitude;
         protected double m_longitude;
         protected double m_atitude;
-        protected Dictionary<Guid, Target> m_targetMap;
-        public Dictionary<Guid, Target> Targets { get { return m_targetMap; } }
+        protected Dictionary<string, Target> m_targetMap;
+        public Dictionary<string, Target> Targets { get { return m_targetMap; } }
         public OperatorSystem(
             GisObject gisObject,
             int startRange,
@@ -31,7 +32,7 @@ namespace OperatorSystems
             double altitude)
         {
             m_gisObject = gisObject;
-            m_targetMap = new Dictionary<Guid, Target>();
+            m_targetMap = new Dictionary<string, Target>();
             m_startRange = startRange;
             m_endRange = endRange;
             m_startAngle = startAngle;
@@ -63,7 +64,7 @@ namespace OperatorSystems
         {
             m_targetMap.Remove(target.TargetId);
         }
-        private bool checkTargetInZones(Target target)
+        protected virtual bool checkTargetInZones(Target target)
         {
             var dist = GisUtil.CalculateDistance(m_latitude, m_longitude, target.Latitude, target.Longitude);
             var bearing = GisUtil.bearing(m_latitude, m_longitude, target.Latitude, target.Longitude);

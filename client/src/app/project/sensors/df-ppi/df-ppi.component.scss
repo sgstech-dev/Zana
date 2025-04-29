@@ -1,4 +1,4 @@
-.ppi-map{
+.ppi-map {
     width: 400px;
     height: 400px;
     background-color: black;
@@ -10,13 +10,21 @@
     overflow: hidden;
     display: inline-block;
 }
-.title{
+
+.title {
     font-size: larger;
 }
-.data-frame{
-    display: inline-flex;
+
+.data-frame2 {
+    display: flex !important;
 }
-.main-frame{
+
+.data {
+    display: inline-block;
+    width: 350px;
+}
+
+.main-frame {
     display: inline-block;
     border-radius: 5px;
     border-color: #2e3747;
@@ -24,4 +32,14 @@
     border-width: 1px;
     box-shadow: 1px 1px 1px black;
     padding: 5px;
+}
+
+.main-frame div {
+    display: flex;
+}
+
+::ng-deep .date-time-Cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

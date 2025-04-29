@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PostBuildEvent>cp "$(TargetDir)JaberSystem.dll" "../../../../../OSLP/SensorSystem/"</PostBuildEvent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../SensorSystems/SensorSystems.csproj" />
+  </ItemGroup>
+</Project>

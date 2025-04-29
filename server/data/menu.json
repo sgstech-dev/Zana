@@ -10,9 +10,8 @@
         "value": "5"
       },
       "permissions": {
-        "except": [
-          "ADMIN",
-          "GUEST"
+        "only": [
+          "admin"
         ]
       }
     },
@@ -20,7 +19,12 @@
       "route": "map",
       "name": "map",
       "type": "link",
-      "icon": "map"
+      "icon": "map",
+      "permissions": {
+        "only": [
+          "admin"
+        ]
+      }
     },
     {
       "route": "sensorPage",
@@ -30,6 +34,11 @@
       "badge": {
         "color": "red-50",
         "value": "0"
+      },
+      "permissions": {
+        "only": [
+          "admin"
+        ]
       }
     },
     {
@@ -40,6 +49,11 @@
       "badge": {
         "color": "red-50",
         "value": "0"
+      },
+      "permissions": {
+        "only": [
+          "admin"
+        ]
       }
     },
     {
@@ -54,7 +68,12 @@
           "type": "link",
           "icon": "colorize"
         }
-      ]
+      ],
+      "permissions": {
+        "only": [
+          "admin"
+        ]
+      }
     },
     {
       "route": "model-managment",
@@ -67,14 +86,21 @@
           "name": "fields",
           "type": "link",
           "icon": "developer_board"
+          
         },
         {
           "route": "objectType",
           "name": "objectType",
           "type": "link",
           "icon": "developer_board"
+          
         }
-      ]
+      ],
+      "permissions": {
+        "only": [
+          "admin"
+        ]
+      }
     },
     {
       "route": "scenario",
@@ -88,7 +114,12 @@
           "type": "link",
           "icon": "colorize"
         }
-      ]
+      ],
+      "permissions": {
+        "only": [
+          "admin"
+        ]
+      }
     }
   ]
 }

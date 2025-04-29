@@ -1,0 +1,22 @@
+<div class="main-frame">
+    <div class="title">
+        <span>{{sensorName}}</span>
+    </div>
+    <div clase="data-frame">
+        <div class="data">
+            <mtx-grid [data]="targetList" [columns]="columns" [loading]="isLoading" [columnResizable]="true"
+                [multiSelectable]="false" [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true"
+                [rowStriped]="true" [showToolbar]="true" [toolbarTitle]="'شناسایی موقعیت اهداف'"
+                [columnHideable]="false" [columnSortable]="true" [columnPinnable]="true" [expandable]="true"
+                [expansionTemplate]="expansionTpl" [pageOnFront]="true" [showPaginator]="false" [noResultText]="'هیچ موردی شناسایی نشده است.'"
+                [pageSize]="5" />
+            <ng-template #expansionTpl let-row>
+                {{row.name}}
+            </ng-template>
+        </div>
+        <div class="map-container">
+            <div [id]="mapId" class="ppi-map">
+            </div>
+        </div>
+    </div>
+</div>

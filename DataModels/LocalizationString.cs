@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Server.models
 {
-    [Table("tblLocalizationStrings",Schema ="SGS_Init")]
+    [Table("tblLocalizationStrings")]
     public class LocalizationString
     {
         [Key]

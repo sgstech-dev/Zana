@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.models;
 
-public enum TargetType { Real = 0, Simulation = 1 }
+public enum TargetType { Position= 0, Direction = 1 }
 public class Target
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public Guid TargetId { get; set; }
+    public String TargetId { get; set; } = "";
     public int SystemTargetId { get; set; }
-    public TargetType TargetType { get; set; } = TargetType.Real;
+    public TargetType TargetType { get; set; } = TargetType.Position;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public double Altitude { get; set; }
@@ -26,5 +26,10 @@ public class Target
     [ForeignKey("Detector_id")]
     public virtual GisObject? Detector{ get; set; }
     public DateTime DetectedTime { get; set; }
-
+    public bool Simulated { get; set; }
+    public string DeviceType { get; set; } = "";
+    public double SNR { get; set; }
+    public double BandWidth{ get; set; }
+    public double CenterFreq { get; set; }
+    public bool EnableHunted { get; set; } = false;
 }

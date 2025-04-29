@@ -15,7 +15,7 @@ public class SensorService
     private Dictionary<int, SensorSystem> SensorSystems { get; set; }
     private IConfiguration _configuration;
     private DecisionBuilder _decisionBuilder;
-    public SensorService(WGDBContextFactory wGDBContextFactory, IHubContext<ServerHub> hubContext, IConfiguration configuration,DecisionBuilder decisionBuilder)
+    public SensorService(WGDBContextFactory wGDBContextFactory, IHubContext<ServerHub> hubContext, IConfiguration configuration, DecisionBuilder decisionBuilder)
     {
         SensorSystems = [];
         _wgdbBContextFactory = wGDBContextFactory;
@@ -60,23 +60,64 @@ public class SensorService
         foreach (var gisObject in gisObjects)
         {
             bool IsSensor = false;
+            string IpAddress = "";
+            int port = 0;
+            bool HasRelay = false;
+            string RelayRemoteServerIpAddres = "";
+            int RelayRemoteServerPort = 0;
+            ConnectionType relayConnectionType = ConnectionType.TcpClient; ;
 
-           // var gisObjectState = await db.Scene.Where(s => s.GisObjectId == gisObject.Id).FirstOrDefaultAsync();
             var metadatas = await db.GisObjectMetaDatas.Include("Field").Where(gom => gom.Object_id == gisObject.Id).ToListAsync();
             foreach (var metadata in metadatas)
             {
-                if(metadata.Field!.Name == "IsSensor")
+                if (metadata.Field!.Name == "IsSensor")
                 {
                     IsSensor = bool.Parse(metadata.Value);
                 }
+                if (metadata.Field!.Name == "IpAddress")
+                {
+                    IpAddress = metadata.Value;
+                }
+                if (metadata.Field!.Name == "Port")
+                {
+                    port = int.Parse(metadata.Value);
+                }
+                if (metadata.Field!.Name == "HasRelay")
+                {
+                    HasRelay = bool.Parse(metadata.Value);
+                }
+                if (metadata.Field!.Name == "RelayRemoteServerIpAddres")
+                {
+                    RelayRemoteServerIpAddres = metadata.Value;
+                }
+                if (metadata.Field!.Name == "RelayRemoteServerPort")
+                {
+                    RelayRemoteServerPort = int.Parse(metadata.Value);
+                }
+                if (metadata.Field!.Name == "RelayType")
+                {
+                    switch (metadata.Value)
+                    {
+                        case "TcpClient": relayConnectionType = ConnectionType.TcpClient; break;
+                        case "TcpListener": relayConnectionType = ConnectionType.TcpListener; break;
+                        case "UdpClient": relayConnectionType = ConnectionType.UdpClient; break;
+                        case "UdpListener": relayConnectionType = ConnectionType.UdpListener; break;
+                        case "HttpListener": relayConnectionType = ConnectionType.HttpListener; break;
+                        case "MoonSocket": relayConnectionType = ConnectionType.MoonSocket; break;
+                        default: relayConnectionType = ConnectionType.TcpClient; break;
+                    }
+                }
             }
-            if (IsSensor){
-                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll",_hubContext,gisObject);
+            if (IsSensor && !SensorSystems.ContainsKey(gisObject.Id))
+            {
+                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject, IpAddress, port);
                 if (sensorSystem != null)
                 {
                     SensorSystems[gisObject.Id] = sensorSystem;
-                    sensorSystem.OnTargetDetected += SensorSystems_OnTargetDetected;    
-                    await sensorSystem.Listen();
+                    sensorSystem.OnTargetDetected += SensorSystems_OnTargetDetected;
+                    if (HasRelay)
+                        sensorSystem.EnableRelay(RelayRemoteServerIpAddres, RelayRemoteServerPort, relayConnectionType);
+                    _ = sensorSystem.Listen();
                 }
             }
         }
@@ -86,5 +127,12 @@ public class SensorService
     {
         _decisionBuilder.UpdateState(target);
         _decisionBuilder.MakeDecision();
+    }
+    public void PushData(Target target, string ipAddress)
+    {
+        foreach (var item in SensorSystems)
+        {
+            item.Value.PushData(target, ipAddress);
+        }
     }
 }

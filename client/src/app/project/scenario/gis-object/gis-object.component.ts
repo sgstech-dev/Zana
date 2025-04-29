@@ -152,7 +152,7 @@ export class GisObjectComponent implements OnInit {
       this.gisObjectForm.controls["ObjectType_id"].updateValueAndValidity();
     });
     this.fieldService.getByCategory(category_id, OwnerTypes.Object).subscribe((fields: Field[]) => {
-      this.addFormControls(fields);
+      this.addFormControls(fields.sort((a, b) => a.id - b.id));
       this.gisObjectMetaDataService.getGisObjectMetaDatasByObjectId(this.gisObject.id).subscribe((gisObjectMetaDatas: GisObjectMetaData[]) => {
         gisObjectMetaDatas.forEach(gisObjectMetaData => {
           if (gisObjectMetaData.field.fieldType == FieldTypes.ItemListMultiSelect)

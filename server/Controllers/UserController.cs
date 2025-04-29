@@ -16,11 +16,12 @@ namespace Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private static readonly List<string> _validRefreshTokens = [];
+        private readonly string secretKey = "kjdfhsdjkf489jkfhsd894854jfd8^jhn#45jhgjG8kjhjkhhjgkgdgtytdyt&^%jhghfjhf";
+        private static readonly Dictionary<string, User> _validRefreshTokens = [];
         private readonly WGDBContext _context;
         private readonly IHostEnvironment _hostEnvironment;
 
-        public UserController(WGDBContext context,IHostEnvironment hostEnvironment)
+        public UserController(WGDBContext context, IHostEnvironment hostEnvironment)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
@@ -115,26 +116,26 @@ namespace Server.Controllers
         public IActionResult Login([FromBody] LoginRequest request)
         {
             // Validate user credentials (replace with your own validation logic)
-            //var acceptUser = _context.Users.Where(u=> u.Username.ToUpper() == request.Username.ToUpper() && u.Password == request.Password).FirstOrDefault();
-            if (request.Username == "test" && request.Password == "password")
-            //if (acceptUser != null)
+            var acceptUser = _context.Users.Where(u => u.Username.ToUpper() == request.Username.ToUpper() && u.Password == request.Password).FirstOrDefault();
+            // if (request.Username == "test" && request.Password == "password")
+            if (acceptUser != null)
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes("kjdfhsdjkf489jkfhsd894854jfd8^jhn#45jhgjG8kjhjkhhjgkgdgtytdyt&^%jhghfjhf"); // Same key as above
+                var key = Encoding.ASCII.GetBytes(secretKey); // Same key as above
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, request.Username)
+                        new Claim(ClaimTypes.NameIdentifier, acceptUser.Id.ToString()),
                     }),
-                    Expires = DateTime.UtcNow.AddHours(1),
+                    Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var refreshToken = GenerateRefreshToken();
 
                 // Store the refresh token (in-memory for demo; use a persistent store in production)
-                _validRefreshTokens.Add(refreshToken);
+                _validRefreshTokens[refreshToken] = acceptUser;
                 var tokenString = tokenHandler.WriteToken(token);
 
                 // Create response object with additional properties
@@ -142,7 +143,8 @@ namespace Server.Controllers
                 {
                     access_token = tokenString,
                     token_type = "Bearer",
-                    expires_in = 1//3600 // Expires in seconds (1 hour)
+                    expires_in = 3600 * 24,// Expires in seconds (1 hour)
+                    refresh_token = refreshToken
                 };
 
                 return Ok(response);
@@ -154,21 +156,21 @@ namespace Server.Controllers
         [HttpPost("refresh")]
         public IActionResult Refresh([FromBody] RefreshRequest request)
         {
-            if (request.RefreshToken == null || !_validRefreshTokens.Contains(request.RefreshToken))
+            if (request.refresh_token == null || !_validRefreshTokens.ContainsKey(request.refresh_token))
             {
                 return Unauthorized();
             }
 
             // Validate the refresh token and create a new JWT token
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("YourSecretKeyHere");
+            var key = Encoding.ASCII.GetBytes(secretKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, "test") // Replace with actual user info
+                    new Claim(ClaimTypes.NameIdentifier, _validRefreshTokens[request.refresh_token].Id.ToString()) // Replace with actual user info
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var newToken = tokenHandler.CreateToken(tokenDescriptor);
@@ -178,7 +180,7 @@ namespace Server.Controllers
             {
                 access_token = tokenString,
                 token_type = "Bearer",
-                expires_in = 1//3600 // Expires in seconds (1 hour)
+                expires_in = 3600 * 24 // Expires in seconds (1 hour)
             };
 
             return Ok(response);
@@ -187,10 +189,10 @@ namespace Server.Controllers
         [HttpPost("logout")]
         public IActionResult Logout([FromBody] LogoutRequest request)
         {
-            if (request.RefreshToken != null && _validRefreshTokens.Contains(request.RefreshToken))
+            if (request.refresh_token != null && _validRefreshTokens.ContainsKey(request.refresh_token))
             {
                 // Invalidate the refresh token
-                _validRefreshTokens.Remove(request.RefreshToken);
+                _validRefreshTokens.Remove(request.refresh_token);
             }
             return NoContent(); // 204 No Content
         }
@@ -201,12 +203,18 @@ namespace Server.Controllers
             return Guid.NewGuid().ToString();
         }
 
-        [HttpGet("me")]
-        public IActionResult Me()
+        [HttpPost("me")]
+        public IActionResult Me([FromBody] MeRequest request	)
         {
-            return Ok(new User { Id = 1, Name = "Ali", Email = "a@a.a", permissions = [""], Roles = [""], Username = "test", Password = "" ,avatar = "images/avatar.jpg"});
+            if (request.refresh_token != null && _validRefreshTokens.ContainsKey(request.refresh_token))
+            {
+                User user = _validRefreshTokens[request.refresh_token];
+                return Ok(user);
+            }
+            return NoContent(); // 204 No Content
+
         }
-        
+
         [HttpGet("menu")]
         public IActionResult menu()
         {
@@ -219,7 +227,7 @@ namespace Server.Controllers
                 result = json;// JsonConvert.DeserializeObject<List<dynamic>>(json);
             }
 
-            
+
             return Ok(result);
         }
     }
@@ -231,11 +239,16 @@ namespace Server.Controllers
     }
     public class RefreshRequest
     {
-        public required string RefreshToken { get; set; }
+        public required string refresh_token { get; set; }
     }
 
     public class LogoutRequest
     {
-        public required string RefreshToken { get; set; }
+        public required string refresh_token { get; set; }
+    }
+
+    public class MeRequest
+    {
+        public required string refresh_token { get; set; }
     }
 }

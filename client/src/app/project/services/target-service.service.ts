@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UUID } from 'crypto';
+import { GisObject } from './gis-object.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,10 @@ export class TargetServiceService {
 
   constructor() { }
 }
-export enum TargetType {Real = 0, Simulation = 1}
+export enum TargetType {Position= 0, Direction = 1}
 export interface Target{
     id:number,
-    targetId:UUID,
+    targetId:string,
     systemTargetId:number,
     targetType:TargetType,
     latitude :number,
@@ -20,5 +21,15 @@ export interface Target{
     speed:number,
     heading:number,
     theta:number,
-    range:number
+    elevation:number,
+    range:number,
+    detector_id:number,
+    detector:GisObject,
+    detectedTime:Date,
+    simulated:boolean,
+    deviceType:string,
+    snr:number,
+    bandWidth:number,
+    centerFreq:number,
+    enableHunted:boolean
 }

@@ -22,12 +22,12 @@ export class LoginService {
     return this.http.post<Token>(this.apiUrl + '/refresh', params);
   }
 
-  logout() {
-    return this.http.post<any>(this.apiUrl + '/logout', {});
+  logout(params: Record<string, any>) {
+    return this.http.post<any>(this.apiUrl + '/logout', params);
   }
 
-  me() {
-    return this.http.get<User>(this.apiUrl + '/me');
+  me(params: Record<string, any>) {
+    return this.http.post<User>(this.apiUrl + '/me', params);
   }
 
   menu() {

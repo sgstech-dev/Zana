@@ -1,8 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GisObjectTableComponent } from '../scenario/gis-object-table/gis-object-table.component';
 import * as L from 'leaflet';
 import 'leaflet.sidepanel';
 import 'leaflet-switch-basemap';
+// declare let require: any;
+// require('leaflet.sidepanel');
+// require('leaflet-switch-basemap');
 import { MapAddress, MapAddressSService } from '../services/map-address-s.service';
 import { SettingsService } from '@core';
 import { stringify } from 'querystring';
@@ -12,23 +15,29 @@ import { GisObjectMetaData, GisObjectMetaDataService } from '../services/gis-obj
 import { SignalRService } from '../services/signal-r.service';
 import { ScenarioService } from '../services/scenario.service';
 import { Subscription } from 'rxjs';
-import { Target } from '../services/target-service.service';
+import { Target, TargetType } from '../services/target-service.service';
+import { PpiUtilityService } from '../services/ppi-utility.service';
+import { DrawingUtilityService } from '../services/drawing-utility.service';
+import { TargetTableComponent } from "../scenario/target-table/target-table.component";
+
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [GisObjectTableComponent],
+  imports: [GisObjectTableComponent, TargetTableComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
 export default class MapComponent implements OnInit, OnDestroy {
   public map!: L.Map;
   public currentScenario_id: number;
-  private gisObjectLayers: L.FeatureGroup = new L.FeatureGroup();
+  public gisObjectLayers: L.FeatureGroup = new L.FeatureGroup();
+  
   private targetLayers: L.FeatureGroup = new L.FeatureGroup();
   private gisObjectZones: Map<number, L.Polygon> = new Map<number, L.Polygon>;
   private scenarioSubscription: Subscription;
   private targets: Map<string, L.Marker> = new Map<string, L.Marker>;
+  @ViewChild('aircraftTable') aircraftTable: TargetTableComponent;
 
   constructor(
     private mapAddressSService: MapAddressSService,
@@ -36,7 +45,10 @@ export default class MapComponent implements OnInit, OnDestroy {
     private gisObjectService: GisObjectService,
     private sceneService: SceneService,
     private scenarioService: ScenarioService,
-    private gisObjectMetaDataService: GisObjectMetaDataService,) { }
+    private gisObjectMetaDataService: GisObjectMetaDataService,
+    private ppiUtilityService: PpiUtilityService,
+    private drawingUtilityService: DrawingUtilityService
+  ) { }
 
   ngOnDestroy(): void {
     // Unsubscribe to avoid memory leaks
@@ -66,14 +78,23 @@ export default class MapComponent implements OnInit, OnDestroy {
           console.log("ConnectionId : " + connectionId);
         });
       SignalRService.getConnection().on("sendTarget", (target: Target) => {
-        let latlng = L.latLng(target.latitude, target.longitude);
-        if (this.targets.has(target.targetId)) {
-          let aTarget = this.targets.get(target.targetId);
-          aTarget.setLatLng(latlng);
-          aTarget.targetMarker.setRotationAngle(target.heading);
+        if (target.targetType == TargetType.Position) {
+          let latlng = L.latLng(target.latitude, target.longitude);
+          if (this.targets.has(target.targetId)) {
+            let aTarget = this.targets.get(target.targetId);
+            aTarget.setLatLng(latlng);
+            aTarget.targetMarker.setRotationAngle(target.heading);
+          }
+          else {
+            this.targets.set(target.targetId, this.createTarget(latlng.lat, latlng.lng));
+          }
         }
-        else {
-          this.targets.set(target.targetId, this.createTarget(latlng.lat, latlng.lng));
+        if (target.targetType == TargetType.Direction) {
+          this.gisObjectLayers.getLayers().forEach(layer => {
+            if (layer.id == target.detector_id) {
+              this.addDirection(layer, target.theta, layer.endRange, 'red',layer.color);
+            }
+          });
         }
         //this.aircraftTable.updateTable(this.currentScenario_id);
         //  console.log(targetState);
@@ -103,7 +124,8 @@ export default class MapComponent implements OnInit, OnDestroy {
       contextmenu: true,
       center: [32.505, 54],
       zoom: 7,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attributionControl: false,
+      zoomSnap: 0.1
     });
     this.addSidePanel();
   }
@@ -182,11 +204,11 @@ export default class MapComponent implements OnInit, OnDestroy {
         this.sceneService.getByGisObjectId(gisObject.id).subscribe((scenes: Scene[]) => {
           let layer;
           if (gisObject.objectType.category.key !== "aircraft") {
-            layer = L.circleMarker([scenes[0].latitude, scenes[0].longitude],{radius:3,fillOpacity:1.0});
+            layer = L.circleMarker([scenes[0].latitude, scenes[0].longitude], { radius: 3, fillOpacity: 1.0 });
             layer.type = "marker";
             layer.gisObject = gisObject;
             layer.id = gisObject.id;
-           // this.setMarkerIcon(layer);
+            // this.setMarkerIcon(layer);
             this.gisObjectLayers.addLayer(layer);
             //this.setMenuContextToMarker(layer);
             this.addPopupToMarker(layer);
@@ -217,6 +239,8 @@ export default class MapComponent implements OnInit, OnDestroy {
     let startAngle = undefined;
     let endAngle = undefined;
     let color = undefined;
+    let threshold: number = undefined;
+
     this.gisObjectMetaDataService.getGisObjectMetaDatasByObjectId(gisObjectlayer.gisObject.id).subscribe((gisObjectMetaDatas: GisObjectMetaData[]) => {
       gisObjectMetaDatas.forEach(metadada => {
         if (metadada.field.name == "startRange")
@@ -229,93 +253,20 @@ export default class MapComponent implements OnInit, OnDestroy {
           endAngle = parseFloat(metadada.value);
         if (metadada.field.name == "color")
           color = metadada.value;
+        if (metadada.field.name == "Threshold")
+          threshold = Number(metadada.value);
       });
+      gisObjectlayer.threshold = threshold;
+      gisObjectlayer.endRange = endRange;
+      gisObjectlayer.color = color;
+      this.aircraftTable.setGisObjectColors(gisObjectlayer.gisObject.id,color);
       if (startRange !== undefined && endRange !== undefined && startAngle !== undefined && endAngle !== undefined) {
-        gisObjectlayer.setStyle({fillColor : color , color:color});
-        this.addSemiCircle(gisObjectlayer, startRange, endRange, startAngle, endAngle, color);
+        gisObjectlayer.setStyle({ fillColor: color, color: color });
+        let sc = this.drawingUtilityService.addSemiCircle(this.map, gisObjectlayer.getLatLng(), startRange, endRange, startAngle, endAngle, color);
+        this.gisObjectZones.set(gisObjectlayer.gisObject.id, sc);
+        this.gisObjectLayers.addLayer(sc);
       }
     });
-  }
-
-  addSemiCircle(gisObjectlayer: L.Marker, minRadius: number, maxRadius: number, startAngle: number, endAngle: number, color: string) {
-    let centerLatLng: L.LatLng = gisObjectlayer.getLatLng();
-    let self = this;
-    function getLastLatLng(φ1, λ1, brng, d) {
-      const R = 6371e3; // metres
-      const φ2 = Math.asin(Math.sin(φ1) * Math.cos(d / R) +
-        Math.cos(φ1) * Math.sin(d / R) * Math.cos(brng));
-      const λ2 = λ1 + Math.atan2(Math.sin(brng) * Math.sin(d / R) * Math.cos(φ1),
-        Math.cos(d / R) - Math.sin(φ1) * Math.sin(φ2));
-      return new L.LatLng(φ2 * 180 / Math.PI, λ2 * 180 / Math.PI);
-    }
-    function generateSemiCircle(latlng, minRadius, maxRadius, startAngle, endAngle) {
-      var points = [];
-      for (let angle = (360 - endAngle); angle <= (360 - startAngle); angle += 5) { // Step size = 5 degrees
-        let radian = ((angleToAzimuth(angle) - 90) * Math.PI) / 180;
-
-        // Outer arc (Max radius)
-        let outerLatLng = getLastLatLng(latlng.lat * Math.PI / 180, latlng.lng * Math.PI / 180, radian, maxRadius);
-        points.push(outerLatLng);
-        // Inner arc (Min radius)
-        let InnerLatLng = getLastLatLng(latlng.lat * Math.PI / 180, latlng.lng * Math.PI / 180, radian, minRadius);
-        points.unshift(InnerLatLng);
-      }
-
-      return points;
-    }
-
-    function angleToAzimuth(angle) {
-      return (450 - angle) % 360;
-    }
-
-    function metersToPixels(latlng, meters) {
-      let point1 = self.map.latLngToLayerPoint(latlng);
-      let destination = L.latLng(latlng.lat, latlng.lng + (meters / getMetersPerPixel(self.map, latlng)));
-      let point2 = self.map.latLngToLayerPoint(destination);
-      return Math.abs(point2.x - point1.x);
-    }
-
-    function getMetersPerPixel(map, latlng) {
-      let zoom = map.getZoom();
-      let earthCircumference = 40075016.686; // Earth's circumference in meters
-      return (earthCircumference * Math.cos(latlng.lat * Math.PI / 180)) / Math.pow(2, zoom + 8);
-    }
-
-    let minRadiusInPixle = metersToPixels(centerLatLng, minRadius);
-    let maxRadiusInPixle = metersToPixels(centerLatLng, maxRadius);
-    var semiCirclePoints = generateSemiCircle(centerLatLng, minRadius, maxRadius, startAngle, endAngle);
-
-    // Draw the semi-circle polygon
-    let sc = L.polygon(semiCirclePoints, {
-      color: color,
-      fillColor: color,
-      fill:false,
-     // fillOpacity: 0.3,
-      weight: 4,
-      dashArray:'5,10',
-      opacity:1.0
-    });
-    sc.targetInIds = [];
-    this.gisObjectZones.set(gisObjectlayer.gisObject.id, sc);
-    this.gisObjectLayers.addLayer(sc);
-    let visible = true;
-    // setInterval(() => {
-    //   visible = !visible;
-    //   if (sc.targetInIds.length > 0) {
-    //     sc.setStyle({
-    //       fillOpacity: visible ? 0.3 : 0.0, // Toggle opacity
-    //       opacity: visible ? 0.3 : 0.0,
-    //       // color: visible ? 'red' : 'yellow' // Change color
-    //     });
-    //   }
-    //   else {
-    //     sc.setStyle({
-    //       fillOpacity: 0.3,
-    //       opacity: 0.3
-    //       // color: visible ? 'red' : 'yellow' // Change color
-    //     });
-    //   }
-    // }, 400);
   }
 
   changeScenario(scenario_id: number) {
@@ -362,4 +313,34 @@ export default class MapComponent implements OnInit, OnDestroy {
     return (brng + 360) % 360;
   }
 
+  private addDirection(gisObjectlayer: L.Marker, theta: number, range: number, color: any, thresholdColor:any = "#00000000") {
+    let centerLatLng: L.LatLng = gisObjectlayer.getLatLng();
+    
+    this.ppiUtilityService.drawFadingLine(this.map, centerLatLng, range, theta, color,3,thresholdColor);
+  }
+
+  private drawFadingLine(gisObjectlayer: L.Marker, lat: number, lng: number, color: any, theta: number, threshold: number, range: number) {
+    // Create a circle with full opacity
+    let centerLatLng: L.LatLng = gisObjectlayer.getLatLng();
+    let sc = this.drawingUtilityService.addSemiCircle(this.map , gisObjectlayer.getLatLng(), 0, range, theta - threshold, theta + threshold, gisObjectlayer.color, true, false);
+
+    let line = L.polyline([[lat, lng], [centerLatLng.lat, centerLatLng.lng]], {
+      color: color,    // Border color
+      fillColor: color, // Fill color
+      fillOpacity: 1,   // Initially fully visible
+      weight: 2
+    }).addTo(this.map);
+
+    let opacity = 1;
+    let fadeInterval = setInterval(() => {
+      opacity -= 0.01; // Reduce opacity gradually
+      line.setStyle({ fillOpacity: Math.max(opacity, 0), opacity: Math.max(opacity, 0) });
+      sc.setStyle({ fillOpacity: Math.max(opacity, 0), opacity: Math.max(opacity, 0) });
+      if (opacity <= 0) {
+        clearInterval(fadeInterval); // Stop fading
+        this.map.removeLayer(line); // Remove from map
+        this.map.removeLayer(sc); // Remove from map
+      }
+    }, 50); // Reduce opacity every 500ms (total 5s)
+  }
 }

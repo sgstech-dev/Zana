@@ -3,7 +3,11 @@ using System.Net.WebSockets;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Xml;
+using Microsoft.AspNetCore.SignalR;
+using Server;
 using Server.models;
+using Server.SensorManager;
+
 
 namespace WebSocketsSample.MoonSocket;
 
@@ -19,8 +23,14 @@ public abstract class Client : IClient
     private Guid _ClientId;
     private WGDBContext? _dbContext;
     private WebSocket? _webSocket;
+    private IHubContext<ServerHub>? _hubContext;
+    private string? ipAddress;
+    private SensorService? _sensorService;
     internal WebSocket WebSocket { get { return _webSocket!; } set { _webSocket = value; } }
     internal WGDBContext? DbContext { get { return _dbContext!; } set { _dbContext = value; } }
+    internal SensorService? SensorService { get { return _sensorService!; } set { _sensorService = value; } }
+    internal IHubContext<ServerHub> HubContext { get { return _hubContext!; } set { _hubContext = value; } }
+    internal string IpAddress { get { return ipAddress??"";} set { ipAddress = value; } }
     public event OnClose? OnClose;
     Guid IClient.ClientId { get => _ClientId; set => _ClientId = value; }
 
@@ -37,6 +47,7 @@ public abstract class Client : IClient
     public Client()
     {
         _webSocket = null;
+
     }
 
     public async Task ListenAsync(Guid ClientId)
@@ -114,7 +125,7 @@ public abstract class Client : IClient
 
 public interface IMoonContext
 {
-    public void AddClient(Guid clientId, WebSocket webSocket);
+    public void AddClient(Guid clientId, WebSocket webSocket, string ipAddress, SensorService sensorService);
     public void RemoveClient(Guid clientId);
     public dynamic All { get; }
 
@@ -124,26 +135,27 @@ public interface IMoonContext
 public class MoonContext<T> : IMoonContext where T : Client, new()
 {
     WGDBContext? _dbContext = null;
+    IHubContext<ServerHub> _hubContext;
     AllClientsWrapper _all;
-    public MoonContext(WGDBContext dbContext)
-    {
-        _dbContext = dbContext;
-        _all = new AllClientsWrapper(_clients);
-    }
-    public MoonContext()
+
+    public MoonContext(IHubContext<ServerHub> hubContext)
     {
         _all = new AllClientsWrapper(_clients);
+        _hubContext = hubContext;
     }
     private static Dictionary<Guid, T> _clients = [];
 
     private Dictionary<Guid, T> Clients => _clients;
 
-    public void AddClient(Guid clientId, WebSocket webSocket)
+    public void AddClient(Guid clientId, WebSocket webSocket,string ipAddress, SensorService sensorService)
     {
         Clients[clientId] = new T
         {
             WebSocket = webSocket,
-            DbContext = _dbContext
+            DbContext = _dbContext,
+            SensorService = sensorService,
+            HubContext = _hubContext,
+            IpAddress = ipAddress
         };
     }
 
@@ -152,7 +164,7 @@ public class MoonContext<T> : IMoonContext where T : Client, new()
         _clients.Remove(clientId);
     }
 
-    public AllClientsWrapper All {get {return _all;}} //new AllClientsWrapper(_clients);
+    public AllClientsWrapper All { get { return _all; } } //new AllClientsWrapper(_clients);
 
     dynamic IMoonContext.All => All;
 

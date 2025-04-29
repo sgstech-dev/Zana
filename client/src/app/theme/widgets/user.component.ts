@@ -7,27 +7,40 @@ import { TranslateModule } from '@ngx-translate/core';
 import { debounceTime, tap } from 'rxjs';
 
 import { AuthService, SettingsService, User } from '@core';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-user',
   template: `
     <button mat-icon-button [matMenuTriggerFor]="menu">
-      <img class="avatar" [src]="user.avatar" width="24" alt="avatar" />
+      <ng-container *ngIf="!imageError; else fallbackIcon">
+        <img [src]="user.avatar" (error)="imageError = true" alt="Profile" />
+      </ng-container>
+      <ng-template #fallbackIcon>
+        <mat-icon>account_circle</mat-icon>
+      </ng-template>
+      <!-- <img class="avatar" [src]="user.avatar" width="24" alt="avatar" /> -->
     </button>
 
     <mat-menu #menu="matMenu">
-      <button routerLink="/profile/overview" mat-menu-item>
-        <mat-icon>account_circle</mat-icon>
-        <span>{{ 'profile' | translate }}</span>
-      </button>
-      <button routerLink="/profile/settings" mat-menu-item>
-        <mat-icon>edit</mat-icon>
-        <span>{{ 'edit_profile' | translate }}</span>
-      </button>
-      <button mat-menu-item (click)="restore()">
-        <mat-icon>restore</mat-icon>
-        <span>{{ 'restore_defaults' | translate }}</span>
-      </button>
+      @if (auth.getPermision('current-user-menu-profile')) {
+        <button routerLink="/profile/overview" mat-menu-item>
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ 'profile' | translate }}</span>
+        </button>
+      }
+      @if (auth.getPermision('current-user-menu-edit')) {
+        <button routerLink="/profile/settings" mat-menu-item>
+          <mat-icon>edit</mat-icon>
+          <span>{{ 'edit_profile' | translate }}</span>
+        </button>
+      }
+      @if (auth.getPermision('current-user-menu-restore')) {
+        <button mat-menu-item (click)="restore()">
+          <mat-icon>restore</mat-icon>
+          <span>{{ 'restore_defaults' | translate }}</span>
+        </button>
+      }
       <button mat-menu-item (click)="logout()">
         <mat-icon>exit_to_app</mat-icon>
         <span>{{ 'logout' | translate }}</span>
@@ -42,16 +55,16 @@ import { AuthService, SettingsService, User } from '@core';
     }
   `,
   standalone: true,
-  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslateModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslateModule, NgIf],
 })
 export class UserComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
 
   user!: User;
-
+  imageError: boolean = false;
   ngOnInit(): void {
     this.auth
       .user()

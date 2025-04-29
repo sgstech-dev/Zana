@@ -1,0 +1,60 @@
+<div class="operationContainer">
+    <div id="info">
+        <div>
+            <img class="info-img" [src]="gisObject.objectType.picBase64" />
+        </div>
+        <div>
+            <img src="/images/icons/Bullets-red.png" class="blinking-icon" width="24" />
+            <span>نام:{{gisObject.name}}</span>
+            <span>زاویه:{{target.theta}}</span>
+            <span>فرکانس:{{target.centerFreq}}</span>
+
+        </div>
+    </div>
+    <div class="operationMap">
+        <div class="operator-row">
+            <div class="operator-col">
+                <mat-slide-toggle color="primary" [checked]="jammer2_4" (change)="jammer2_4Togle()">
+                    Jammer 2.4
+                </mat-slide-toggle>
+            </div>
+            <div class="operator-col">
+                <mat-slide-toggle color="primary" [checked]="jammer5_8">
+                    Jammer 5.8
+                </mat-slide-toggle>
+            </div>
+        </div>
+        <div class="operator-row">
+            <div class="operator-col">
+                <mat-slide-toggle color="primary" [checked]="jammer400">
+                    Jammer 400
+                </mat-slide-toggle>
+            </div>
+            <div class="operator-col">
+                <mat-slide-toggle color="primary" [checked]="jammer900">
+                    Jammer 900
+                </mat-slide-toggle>
+            </div>
+        </div>
+        <div class="operator-row">
+            <div class="operator-col">
+                <mat-slide-toggle color="warm" [checked]="jammerGPS">
+                    Jammer GPS
+                </mat-slide-toggle>
+            </div>
+            <div class="operator-col">
+                <div class="operator-col">
+                    <mat-slide-toggle color="accent" [checked]="jammerAll" (toggleChange)="allJammerTogle()">
+                        All Jammer
+                    </mat-slide-toggle>
+                </div>
+            </div>
+        </div>
+        
+        
+       
+        
+       
+    </div>
+
+</div>

@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   baseUrl: '',
-  apiUrl: 'http://localhost:5026',
+ // apiUrl: 'http://192.168.1.9:9494',
+   apiUrl: 'http://localhost:9494',
   useHash: false,
 };
 

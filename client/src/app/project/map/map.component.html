@@ -25,7 +25,7 @@
                 <app-gis-object-table #gisObjectTable [scenario_id]="currentScenario_id" [isAircraft]="false" (flyTo)="flyTo($event)"></app-gis-object-table>
               </div>
               <div class="sidepanel-tab-content" data-tab-content="tab-2">
-                <app-gis-object-table #aircraftTable [scenario_id]="currentScenario_id" [isAircraft]="true" (flyTo)="flyTo($event)"></app-gis-object-table>
+                <app-target-table #aircraftTable [scenario_id]="currentScenario_id"  [gisObjectLayers]="gisObjectLayers" [isAircraft]="true" (flyTo)="flyTo($event)"></app-target-table>
               </div>
               <!-- [...] -->
             </div>

@@ -28,8 +28,13 @@
   border-color: #585e6a;
   position: absolute;
   top: 15px;
-  right: 25px;
   box-shadow: 3px 2px 5px #44454a;
+}
+.object-type-img:dir(rtl){
+  right: 25px;
+}
+.object-type-img:dir(ltr){
+  left: 25px;
 }
 .object-type-img img{
   width: 100%;
