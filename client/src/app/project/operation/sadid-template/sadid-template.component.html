@@ -1,0 +1,47 @@
+
+<div class="operationContainer">
+    <div id="info">
+        <div>
+            <img class="info-img" [src]="gisObject.objectType.picBase64" />
+        </div>
+        <div>
+            @if(!sadidState){
+                <img src="/images/icons/Bullets-red.png" class="blinking-icon"  />
+            }
+            @else {
+                <img src="/images/icons/Bullets-green.png" class="none-blinking-icon" />
+            }
+            <span>{{gisObject.name}}</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="row">
+            <div class="operationMap">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Band1" [disabled]="!Band1State" (change)="Band1Togle()">
+                            Band 1
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Band2" [disabled]="!Band2State" (change)="Band2Togle()">
+                            Band 2
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Band3" [disabled]="!Band3State" (change)="Band3Togle()">
+                            Band 3
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Band4" [disabled]="!Band4State" (change)="Band4Togle()">
+                            Band 4
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

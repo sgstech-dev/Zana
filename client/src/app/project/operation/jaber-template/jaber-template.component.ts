@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, inject, Input, input, NgZone, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MtxGridColumn, MtxGridModule } from '@ng-matero/extensions/grid';
+import { MtxGridColumn, MtxGridColumnMenu, MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { GisObject } from 'app/project/services/gis-object.service';
 import { MoonSocketService } from 'app/project/services/moon-socket.service';
@@ -17,23 +17,54 @@ import * as L from 'leaflet';
 })
 export class JaberTemplateComponent implements OnInit, AfterViewInit {
 
-  constructor(private moonSocketService: MoonSocketService, private ngZone: NgZone) { }
+  constructor(
+    private moonSocketService: MoonSocketService,
+    private ngZone: NgZone) { }
 
   @Input() gisObject: GisObject;
-  @Input() target: Target;
+  @Input() set target(value: Target) { this.targetList.unshift(value) };
   public map!: L.Map;
   public goToHome: boolean = false;
   public goToLocation: boolean = false;
   public flying: boolean = false;
   public landing: boolean = false;
   public targetList: Target[] = [];
+  public selectedTarget: Target;
+  public gtl_lat: number;
+  public gtl_lng: number;
+  public goToHomeState: boolean = true;
+  public goToLocationState: boolean = true;
+  public flyingState: boolean = true;
+  public landingState: boolean = true;
+  private inProccessOperator: boolean = false;
+  public jaberState:boolean = false;
+
   private readonly translate = inject(TranslateService);
 
   ngOnInit(): void {
+    this.setStateOperators(false);
   }
 
   ngAfterViewInit(): void {
     this.initializeMap();
+    this.initSignalR();
+  }
+
+  initSignalR(): void {
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().on("jaberState", (state: boolean) => {
+        this.jaberState = state;
+      });
+    });
+  }
+
+  targetSelected($event: any[]) {
+    this.selectedTarget = $event.at(0);
+    if(!this.inProccessOperator && this.jaberState)
+    {
+      this.setStateOperators(true);
+      this.inProccessOperator = true;
+    }
   }
 
   private initializeMap() {
@@ -49,24 +80,55 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
     return "jaberMap_" + this.gisObject.id;
   }
 
+  setStateOperators(state: boolean) {
+    this.ngZone.run(() => {
+      this.goToHomeState = state;
+      this.flyingState = state;
+      this.goToLocationState = state;
+      this.landingState = state;
+    });
+  }
+
+  goToHomeTogle() {
+    this.goToHome = !this.goToHome;
+    console.log("goToHome:", this.goToHome);
+    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "backToHome").subscribe(() => {
+      this.setStateOperators(false);
+    });
+  }
+
+  goToLocationTogle() {
+    this.goToLocation = !this.goToLocation;
+    console.log("goToLocation:", this.goToLocation);
+    this.moonSocketService.takingPossession(this.selectedTarget.targetId, this.gtl_lat, this.gtl_lng, "sendLocation").subscribe(() => {
+      this.setStateOperators(false);
+    });
+  }
+
+  flyingTogle() {
+    this.flying = !this.flying;
+    console.log("flying:", this.flying);
+    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "takeOff").subscribe(() => {
+      this.setStateOperators(false);
+    });
+  }
+
+  landingTogle() {
+    this.landing = !this.landing;
+    console.log("landing:", this.landing);
+    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "landing").subscribe(() => {
+      this.setStateOperators(false);
+    });
+  }
+
   columns: MtxGridColumn[] = [
-    // {
-    //   header: this.translate.stream('targetSerialNo'),
-    //   field: 'targetId',
-    //   sortable: false,
-    //   width: '100%'
-    // },
-    // {
-    //   header: this.translate.stream('enableHunted'),
-    //   field: 'enableHunted',
-    //   sortable: false,
-    //   width: '100%',
-    //   type: 'tag',
-    //   tag: {
-    //     true: { text: 'Yes' },
-    //     false: { text: 'No' },
-    //   },
-    // },
+    {
+      header: this.translate.stream('serialNo'),
+      field: 'targetId',
+      sortable: false,
+      width: '100%',
+      pinned: 'left',
+    },
     {
       header: this.translate.stream('lat'),
       field: 'latitude',
@@ -85,15 +147,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
         return rowData.longitude.toFixed(2);
       },
     },
-    {
-      header: this.translate.stream('alt'),
-      field: 'altitude',
-      sortable: false,
-      width: '100%',
-      formatter: (rowData) => {
-        return rowData.elevation.toFixed(2);
-      },
-    },
+
     {
       header: this.translate.stream('detectedTime'),
       field: 'detectedTime',

@@ -34,4 +34,5 @@ public class SadidSystem : OperatorSystem
     {
         Console.WriteLine("Target <" + target.TargetId + "> is finished operation by " + m_gisObject.Name);
     }
+    
 }

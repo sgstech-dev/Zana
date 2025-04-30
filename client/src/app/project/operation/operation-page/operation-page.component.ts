@@ -7,17 +7,19 @@ import { GisObject } from 'app/project/services/gis-object.service';
 import { NgFor } from '@angular/common';
 import { SaherTemplateComponent } from '../saher-template/saher-template.component';
 import { JaberTemplateComponent } from "../jaber-template/jaber-template.component";
+import { SadidTemplateComponent } from "../sadid-template/sadid-template.component";
 
 @Component({
   selector: 'app-operation-page',
   standalone: true,
-  imports: [PageHeaderComponent, OperationTemplateComponent, SaherTemplateComponent, JaberTemplateComponent],
+  imports: [PageHeaderComponent, OperationTemplateComponent, SaherTemplateComponent, JaberTemplateComponent, SadidTemplateComponent],
   templateUrl: './operation-page.component.html',
   styleUrl: './operation-page.component.scss',
   changeDetection: ChangeDetectionStrategy.Default
 })
 export default class OperationPageComponent implements OnInit {
-  constructor(private ngZone: NgZone){}
+  
+  constructor(private ngZone: NgZone) { }
 
   gisObjectsAssined: any[] = [];
   @ViewChild('JaberOperator') JaberOperator: JaberTemplateComponent;
@@ -30,10 +32,10 @@ export default class OperationPageComponent implements OnInit {
     SignalRService.startConnection().then(() => {
       SignalRService.getConnection().on("assignTarget", (target: Target, gisObject: GisObject) => {
         this.ngZone.run(() => {
-          if (!this.ObjectsAssinedContain(gisObject.id)){
+          if (!this.ObjectsAssinedContain(gisObject.id)) {
             this.gisObjectsAssined.push({ target: target, gisObject: gisObject });
           }
-          if (gisObject.objectType.name == "JaberSystem") {
+          if (gisObject.objectType.name == "JaberSystem" && this.JaberOperator != undefined) {
             this.JaberOperator.targetList.unshift(target);
             this.JaberOperator.targetList = [...this.JaberOperator.targetList];
           }

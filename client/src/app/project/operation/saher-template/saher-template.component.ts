@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, Input, input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, input, NgZone, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GisObject } from 'app/project/services/gis-object.service';
 import { MoonSocketService } from 'app/project/services/moon-socket.service';
+import { SignalRService } from 'app/project/services/signal-r.service';
 import { Target } from 'app/project/services/target-service.service';
 import * as L from 'leaflet';
 
@@ -14,11 +15,15 @@ import * as L from 'leaflet';
 })
 export class SaherTemplateComponent implements OnInit, AfterViewInit {
 
-  constructor(private moonSocketService: MoonSocketService) { }
+  constructor(
+    private moonSocketService: MoonSocketService,
+    private ngZone: NgZone
+  ) { }
 
   @Input() gisObject: GisObject;
   @Input() target: Target;
   public map!: L.Map;
+  public motor: boolean = false;
   public jammer2_4: boolean = false;
   public jammer5_8: boolean = false;
   public jammer400: boolean = false;
@@ -26,11 +31,31 @@ export class SaherTemplateComponent implements OnInit, AfterViewInit {
   public jammerGPS: boolean = false;
   public jammerAll: boolean = false;
   ngOnInit(): void {
-
+    this.initSignalR();
   }
 
   ngAfterViewInit(): void {
     this.initializeMap();
+    this.moonSocketService.saherStatusRequest().subscribe();
+    setInterval(() => {
+      this.moonSocketService.saherStatusRequest().subscribe();
+    }, 3000);
+  }
+
+  initSignalR(): void {
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().on("jammersAndMotorStatus", (motor: boolean, jammer2_4: boolean, jammer5_8: boolean, jammer400: boolean, jammer900: boolean, jammersGPS: boolean, autoControl: boolean) => {
+        this.ngZone.run(() => {
+          this.motor = motor;
+          this.jammer2_4 = jammer2_4;
+          this.jammer5_8 = jammer5_8;
+          this.jammer400 = jammer400;
+          this.jammer900 = jammer900;
+          this.jammerGPS = jammersGPS;
+          this.jammerAll = jammer2_4 && jammer5_8 && jammer400 && jammer900 && jammersGPS;
+        });
+      });
+    });
   }
 
   private initializeMap() {
@@ -55,6 +80,12 @@ export class SaherTemplateComponent implements OnInit, AfterViewInit {
     this.jammerAll = this.jammerAll;
     this.moonSocketService.saher_TurnOn_Off("JammerAll").subscribe();
   }
+  motorTogle() {
+    this.motor = !this.motor;
+    console.log("Motor:", this.motor);
+    this.moonSocketService.saher_TurnOn_Off("motor").subscribe();
+  }
+
   jammer2_4Togle() {
     this.jammer2_4 = !this.jammer2_4;
     console.log("Jammer2.4 :", this.jammer2_4);

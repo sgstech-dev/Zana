@@ -1,6 +1,5 @@
 .operationMap {
-    width: 75%;
-    height: 161px;
+    width: 100%;
     display: table;
     border-radius: 5px;
     padding: 10px;
@@ -11,12 +10,40 @@
     margin: 12px;
 }
 
+.operationMap .row {
+    padding: 5px 0;
+}
+
 #info {
-    display: inline-block;
+    display: flex;
     padding-left: 10px;
     padding-right: 10px;
     vertical-align: top;
     padding-top: 10px;
+    position: absolute;
+    background-color: #0c1220;
+    top: 0px;
+    border-radius: 6px;
+    box-shadow: 3px 5px 8px black;
+    right: 25px;
+    left: 25px;
+}
+
+#info div {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#info div span {
+    display: inline-block;
+    position: absolute;
+    top: 22px;
+    font-size: larger;
+    text-shadow: 3px 3px 1px black;
+}
+
+#info div img {
+    display: inline-block;
 }
 
 .info-img {
@@ -39,7 +66,13 @@ span {
     border-width: 1px;
     border-style: solid;
     display: flex;
+    margin-top: 60px;
+    padding-top: 10px;
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
+
 
 @keyframes blip {
     0% {
@@ -57,7 +90,17 @@ span {
 
 .blinking-icon {
     animation: blip 1s infinite;
+    display: inline-block;
+    width: 24px;
+    margin: 12px;
 }
+
+.none-blinking-icon{
+    display: inline-block;
+    width: 24px;
+    margin: 12px;
+}
+
 
 .operator-row {
     display: table-row;
@@ -65,4 +108,7 @@ span {
 
 .operator-col {
     display: table-cell;
+}
+.main-content {
+    width: 100%;
 }

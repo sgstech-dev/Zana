@@ -8,10 +8,12 @@
     @else if(item.gisObject.objectType.name == "JaberSystem"){
       <app-jaber-template #JaberOperator [gisObject]=item.gisObject [target]="item.target"></app-jaber-template>
     }
+    @else if(item.gisObject.objectType.name == "SadidSystem"){
+      <app-sadid-template #SadidOperator [gisObject]=item.gisObject [target]="item.target"></app-sadid-template>
+    }
     @else {
       <app-operation-template [gisObject]=item.gisObject [target]="item.target"></app-operation-template>
     }
-    {{item.gisObject.objectType.name}}
   </div>
   }
 </div>
