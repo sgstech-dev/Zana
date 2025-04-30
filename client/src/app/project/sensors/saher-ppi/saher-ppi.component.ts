@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, Input, numberAttribute, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, Input, NgZone, numberAttribute, OnInit, ViewChild } from '@angular/core';
 import { randomUUID, UUID } from 'crypto';
 import * as L from 'leaflet';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,11 +8,14 @@ import { MtxGridColumn, MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTimeUtilityService } from 'app/project/services/date-time-utility.service';
 import { PpiUtilityService } from 'app/project/services/ppi-utility.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MoonSocketService } from 'app/project/services/moon-socket.service';
+import { SignalRService } from 'app/project/services/signal-r.service';
 
 @Component({
   selector: 'app-saher-ppi',
   standalone: true,
-  imports: [MtxGridModule],
+  imports: [MtxGridModule, MatSlideToggleModule],
   templateUrl: './saher-ppi.component.html',
   styleUrl: './saher-ppi.component.scss'
 })
@@ -29,19 +32,43 @@ export class SaherPPIComponent implements OnInit, AfterViewInit {
   public directionList: Target[] = [];
   private readonly translate = inject(TranslateService);
   isLoading: boolean = false;
+  motor: boolean;
 
   constructor(
     private dateTimeUtilityService: DateTimeUtilityService,
-    private ppiUtilityService: PpiUtilityService
+    private ppiUtilityService: PpiUtilityService,
+    private moonSocketService: MoonSocketService,
+    private ngZone: NgZone
   ) { }
   ngAfterViewInit(): void {
     this.center = L.latLng(this.centerLat, this.centerLng);
     this.initializeMap();
+    this.initSignalR();
     this.ppiUtilityService.drawPPIAxis(this.map, this.center, this.radius);
   }
   ngOnInit(): void {
-
+    this.moonSocketService.saherStatusRequest().subscribe();
+    setInterval(() => {
+      this.moonSocketService.saherStatusRequest().subscribe();
+    }, 3000);
   }
+
+  initSignalR(): void {
+      SignalRService.startConnection().then(() => {
+        SignalRService.getConnection().on("jammersAndMotorStatus", (motor: boolean, jammer2_4: boolean, jammer5_8: boolean, jammer400: boolean, jammer900: boolean, jammersGPS: boolean, autoControl: boolean) => {
+          this.ngZone.run(() => {
+            this.motor = motor;
+          });
+        });
+      });
+    }
+
+  motorTogle() {
+    this.motor = !this.motor;
+    console.log("Motor:", this.motor);
+    this.moonSocketService.saher_TurnOn_Off("motor").subscribe();
+  }
+
   private initializeMap() {
     this.map = L.map(this.mapId, {
       contextmenu: true,

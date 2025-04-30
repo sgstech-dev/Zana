@@ -4,7 +4,7 @@ import {
   OverlayContainer,
   OverlayModule,
   OverlayRef
-} from "./chunk-XJDG36UD.js";
+} from "./chunk-45RO3P3H.js";
 import {
   BasePortalOutlet,
   CdkPortalOutlet,
@@ -21,12 +21,12 @@ import {
   hasModifierKey
 } from "./chunk-U7VVEHQ6.js";
 import {
+  Directionality
+} from "./chunk-SWKTGBAV.js";
+import {
   Platform,
   _getFocusedElementPierceShadowDom
 } from "./chunk-5DDL3Q73.js";
-import {
-  Directionality
-} from "./chunk-SWKTGBAV.js";
 import {
   DOCUMENT
 } from "./chunk-R3EXXSPB.js";
@@ -841,4 +841,4 @@ export {
   Dialog,
   DialogModule
 };
-//# sourceMappingURL=chunk-Q4C3X56L.js.map
+//# sourceMappingURL=chunk-SQ5OHGMY.js.map

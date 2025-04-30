@@ -1,6 +1,6 @@
 import {
   MatCommonModule
-} from "./chunk-MJ2NW6UZ.js";
+} from "./chunk-HBP6OA6Q.js";
 import {
   A11yModule,
   AriaDescriber,
@@ -399,4 +399,4 @@ export {
   MatBadge,
   MatBadgeModule
 };
-//# sourceMappingURL=chunk-FRKKJFMB.js.map
+//# sourceMappingURL=chunk-MFJPDDMP.js.map

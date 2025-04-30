@@ -7,6 +7,9 @@ import {
   isFakeTouchstartFromScreenReader
 } from "./chunk-U7VVEHQ6.js";
 import {
+  BidiModule
+} from "./chunk-SWKTGBAV.js";
+import {
   Platform,
   _getEventTarget,
   _isTestEnvironment,
@@ -15,9 +18,6 @@ import {
   coerceNumberProperty,
   normalizePassiveListenerOptions
 } from "./chunk-5DDL3Q73.js";
-import {
-  BidiModule
-} from "./chunk-SWKTGBAV.js";
 import {
   DOCUMENT
 } from "./chunk-R3EXXSPB.js";
@@ -2316,4 +2316,4 @@ export {
   MatRippleLoader,
   _MatInternalFormField
 };
-//# sourceMappingURL=chunk-MJ2NW6UZ.js.map
+//# sourceMappingURL=chunk-HBP6OA6Q.js.map

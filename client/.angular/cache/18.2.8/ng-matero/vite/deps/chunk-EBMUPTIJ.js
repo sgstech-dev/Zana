@@ -1,6 +1,6 @@
 import {
   MatCommonModule
-} from "./chunk-MJ2NW6UZ.js";
+} from "./chunk-HBP6OA6Q.js";
 import {
   DOCUMENT
 } from "./chunk-R3EXXSPB.js";
@@ -349,4 +349,4 @@ export {
   MatProgressBar,
   MatProgressBarModule
 };
-//# sourceMappingURL=chunk-VAOMSBVT.js.map
+//# sourceMappingURL=chunk-EBMUPTIJ.js.map

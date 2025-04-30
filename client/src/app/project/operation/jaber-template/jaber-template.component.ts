@@ -29,7 +29,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   public flying: boolean = false;
   public landing: boolean = false;
   public targetList: Target[] = [];
-  public selectedTarget: Target;
+  public selectedTarget: Target | undefined = undefined;
   public gtl_lat: number = 26.1;
   public gtl_lng: number = 53.4;
   public goToHomeState: boolean = true;

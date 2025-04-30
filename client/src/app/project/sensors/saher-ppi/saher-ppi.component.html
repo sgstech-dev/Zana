@@ -1,14 +1,19 @@
 <div class="main-frame">
     <div class="title">
         <span>{{sensorName}}</span>
+        <div class="col-lg-12">
+            <mat-slide-toggle color="primary" [checked]="motor" (change)="motorTogle()">
+                Motor
+            </mat-slide-toggle>
+        </div>
     </div>
-    <div >
+    <div>
         <div class="data">
             <mtx-grid [data]="directionList" [columns]="columns" [loading]="isLoading" [columnResizable]="true"
                 [multiSelectable]="false" [rowSelectable]="true" [hideRowSelectionCheckbox]="true" [rowHover]="true"
-                [rowStriped]="true" [showToolbar]="true" [toolbarTitle]="'شناسایی جهت اهداف'"
-                [columnHideable]="false" [columnSortable]="true" [columnPinnable]="true" [expandable]="true"
-                [expansionTemplate]="expansionTpl" [pageOnFront]="true" [showPaginator]="false" [noResultText]="'هیچ موردی شناسایی نشده است.'"
+                [rowStriped]="true" [showToolbar]="true" [toolbarTitle]="'شناسایی جهت اهداف'" [columnHideable]="false"
+                [columnSortable]="true" [columnPinnable]="true" [expandable]="true" [expansionTemplate]="expansionTpl"
+                [pageOnFront]="true" [showPaginator]="false" [noResultText]="'هیچ موردی شناسایی نشده است.'"
                 [pageSize]="5" />
             <ng-template #expansionTpl let-row>
                 {{row.name}}

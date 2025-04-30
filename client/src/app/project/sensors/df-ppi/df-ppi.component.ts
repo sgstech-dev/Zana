@@ -48,7 +48,7 @@ export class DfPPIComponent implements OnInit, AfterViewInit {
       center: this.center,
       zoom: 7,
      // subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      zoomControl: true,
+      zoomControl: false,
       attributionControl: false,
       dragging: false, // Disable panning
       scrollWheelZoom: false, // Disable zooming with the scroll wheel

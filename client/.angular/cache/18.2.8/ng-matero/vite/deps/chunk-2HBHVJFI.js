@@ -5,7 +5,7 @@ import {
   DateAdapter,
   MAT_DATE_FORMATS,
   MAT_DATE_LOCALE
-} from "./chunk-MJ2NW6UZ.js";
+} from "./chunk-HBP6OA6Q.js";
 import {
   Inject,
   Injectable,
@@ -322,4 +322,4 @@ export {
   MatMomentDateModule,
   provideMomentDateAdapter
 };
-//# sourceMappingURL=chunk-MRX26VFO.js.map
+//# sourceMappingURL=chunk-2HBHVJFI.js.map

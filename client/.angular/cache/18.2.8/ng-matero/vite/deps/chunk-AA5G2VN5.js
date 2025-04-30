@@ -1,6 +1,6 @@
 import {
   MatCommonModule
-} from "./chunk-MJ2NW6UZ.js";
+} from "./chunk-HBP6OA6Q.js";
 import {
   CommonModule,
   NgTemplateOutlet
@@ -350,4 +350,4 @@ export {
   MatSpinner,
   MatProgressSpinnerModule
 };
-//# sourceMappingURL=chunk-AJHQ464K.js.map
+//# sourceMappingURL=chunk-AA5G2VN5.js.map

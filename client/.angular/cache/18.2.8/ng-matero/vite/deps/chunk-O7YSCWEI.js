@@ -2,7 +2,7 @@ import {
   AnimationCurves,
   AnimationDurations,
   MatCommonModule
-} from "./chunk-MJ2NW6UZ.js";
+} from "./chunk-HBP6OA6Q.js";
 import {
   animate,
   animateChild,
@@ -793,4 +793,4 @@ export {
   MatSortHeader,
   MatSortModule
 };
-//# sourceMappingURL=chunk-S2IUYBOK.js.map
+//# sourceMappingURL=chunk-O7YSCWEI.js.map

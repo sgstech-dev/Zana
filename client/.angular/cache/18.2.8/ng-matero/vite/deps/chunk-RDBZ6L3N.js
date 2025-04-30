@@ -2,11 +2,14 @@ import {
   CdkScrollableModule,
   ScrollDispatcher,
   ViewportRuler
-} from "./chunk-DVKTFHZ6.js";
+} from "./chunk-2NPGNF2M.js";
 import {
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader
 } from "./chunk-U7VVEHQ6.js";
+import {
+  Directionality
+} from "./chunk-SWKTGBAV.js";
 import {
   _getEventTarget,
   _getShadowRoot,
@@ -15,9 +18,6 @@ import {
   coerceNumberProperty,
   normalizePassiveListenerOptions
 } from "./chunk-5DDL3Q73.js";
-import {
-  Directionality
-} from "./chunk-SWKTGBAV.js";
 import {
   DOCUMENT
 } from "./chunk-R3EXXSPB.js";
@@ -3878,4 +3878,4 @@ export {
   CdkDragPlaceholder,
   DragDropModule
 };
-//# sourceMappingURL=chunk-A5ZEBPIB.js.map
+//# sourceMappingURL=chunk-RDBZ6L3N.js.map
