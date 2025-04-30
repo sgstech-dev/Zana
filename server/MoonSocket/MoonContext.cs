@@ -30,7 +30,7 @@ public abstract class Client : IClient
     internal WGDBContext? DbContext { get { return _dbContext!; } set { _dbContext = value; } }
     internal SensorService? SensorService { get { return _sensorService!; } set { _sensorService = value; } }
     internal IHubContext<ServerHub> HubContext { get { return _hubContext!; } set { _hubContext = value; } }
-    internal string IpAddress { get { return ipAddress??"";} set { ipAddress = value; } }
+    internal string IpAddress { get { return ipAddress ?? ""; } set { ipAddress = value; } }
     public event OnClose? OnClose;
     Guid IClient.ClientId { get => _ClientId; set => _ClientId = value; }
 
@@ -104,13 +104,21 @@ public abstract class Client : IClient
             System.Reflection.BindingFlags.Instance |
             System.Reflection.BindingFlags.NonPublic |
             System.Reflection.BindingFlags.Public);
+            Console.WriteLine("Client Id : " + clientId + " call the function :" + functionName);
+            if (method != null)
+            {
+                if (method.GetParameters().Length == parameters.Length)
+                {
+                    // Invoke the method dynamically
+                    var value = method?.Invoke(this, parameters);
+                    var resultJson = Protocol.GetResultJson(functionId, value);
+                    await _webSocket!.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(resultJson)), WebSocketMessageType.Text, true, CancellationToken.None);
 
-            // Invoke the method dynamically
-            var value = method?.Invoke(this, parameters);
-            var resultJson = Protocol.GetResultJson(functionId, value);
-            await _webSocket!.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(resultJson)), WebSocketMessageType.Text, true, CancellationToken.None);
-
-            Console.WriteLine("Client Id : " + clientId + " call a function.");
+                    Console.WriteLine("Client Id : " + clientId + " call the function is success.");
+                }
+                else
+                    Console.WriteLine("Parameters in method " + functionName + " are not match!!.");
+            }
         }
     }
 
@@ -147,7 +155,7 @@ public class MoonContext<T> : IMoonContext where T : Client, new()
 
     private Dictionary<Guid, T> Clients => _clients;
 
-    public void AddClient(Guid clientId, WebSocket webSocket,string ipAddress, SensorService sensorService)
+    public void AddClient(Guid clientId, WebSocket webSocket, string ipAddress, SensorService sensorService)
     {
         Clients[clientId] = new T
         {

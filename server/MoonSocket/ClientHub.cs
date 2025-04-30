@@ -135,10 +135,10 @@ public class ClientHub : Client
         target.CenterFreq = centerFreq;
         target.Range = distance;
         target.TargetType = TargetType.Direction;
-        SensorService?.PushData(target,IpAddress);
+        SensorService?.PushData(target, IpAddress);
     }
 
-    public void jammersAndMotorStatus(bool motor, bool jammer2_4, bool jammer5_8, bool jammer400, bool jammer900, bool jammersGPS, bool autoControl)
+    public void JammerAndMotorStatus(bool motor, bool jammer2_4, bool jammer5_8, bool jammer400, bool jammer900, bool jammersGPS, bool autoControl)
     {
         Console.WriteLine("Mottor state: " + motor + " Jammer2.4  state: " + jammer2_4 + " Jammer5.8  state: " + jammer5_8 + " Jammer400  state: " + jammer400 + " Jammer900 state: " + jammer900 + " JammerGPS  state: " + jammersGPS + " AutoControl  state: " + autoControl);
         HubContext.Clients.All.SendAsync("jammersAndMotorStatus", motor, jammer2_4, jammer5_8, jammer400, jammer900, jammersGPS, autoControl).Wait();
@@ -149,20 +149,28 @@ public class ClientHub : Client
         HubContext.Clients.All.SendAsync("JaberState", State).Wait();
     }
 
-    public void sendTargetInfo(string UUID, double QuadAlt, string SerialNumber, double QuadLat, double QuadLong, double QuadHeight, double HomeLat, double HomeLong, string Type, double PilotLat, double PilotLong, double QuadSpeedLat, double QuadSpeedHeight, double QuadSpeedLong, string Date, string Time, string User, string Color, bool EnableHunted)
+    public void sendTargetInfo(string UUID, string QuadAlt, string SerialNumber, string QuadLat, string QuadLong, string QuadHeight, string HomeLat, string HomeLong, string Type, string PilotLat, string PilotLong, string QuadSpeedLat, string QuadSpeedHeight, string QuadSpeedLong, string Date, string Time, bool EnableHunted)
     {
+        double tmp;
         Target target = new Target()
         {
             TargetId = SerialNumber,
-            Altitude = QuadAlt,
-            Latitude = QuadLat,
-            Longitude = QuadLong,
+            Altitude = double.TryParse(QuadAlt, out tmp) ? tmp : 0,
+            Latitude = double.TryParse(QuadLat, out tmp) ? tmp : 0,
+            Longitude = double.TryParse(QuadLong, out tmp) ? tmp : 0,
             DetectedTime = DateTime.Now,//باید اصلاح شود
             DeviceType = Type,
             Simulated = false,
             EnableHunted = EnableHunted
         };
-        
-        SensorService?.PushData(target,IpAddress);
+
+        SensorService?.PushData(target, IpAddress);
+    }
+
+    //Call from Sadid
+    public void SadidState(bool State)
+    {
+        HubContext.Clients.All.SendAsync("SadidState", State).Wait();
+        Console.WriteLine("Sayad state is : " + State);
     }
 }

@@ -36,7 +36,11 @@ export default class OperationPageComponent implements OnInit {
             this.gisObjectsAssined.push({ target: target, gisObject: gisObject });
           }
           if (gisObject.objectType.name == "JaberSystem" && this.JaberOperator != undefined) {
-            this.JaberOperator.targetList.unshift(target);
+            let existsTargetIdx = this.JaberOperator.targetList.findIndex((t:Target)=>t.targetId==target.targetId);
+            if (existsTargetIdx < 0)
+              this.JaberOperator.targetList.unshift(target);
+            else
+              this.JaberOperator.targetList[existsTargetIdx] = target;
             this.JaberOperator.targetList = [...this.JaberOperator.targetList];
           }
         });

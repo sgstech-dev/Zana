@@ -52,7 +52,7 @@ public class MoonSocket : ControllerBase
 
     [HttpGet]
     [Route("saherStatusRequest")]
-    public void saherStatusRequest(string JammerName)
+    public void saherStatusRequest()
     {
         _moonContext.All.Invoke("jammersAndMotorStatusRequest", new Parameter { });
     }
@@ -64,11 +64,22 @@ public class MoonSocket : ControllerBase
     public void takingPossession(string serialNumber, double lat, double lng, string order)
     {
         List<Parameter> parameters = new List<Parameter>();
-        parameters.Add(new Parameter { ParamName = "serialNumber", Value = serialNumber});
-        parameters.Add(new Parameter { ParamName = "Lat", Value = lat});
-        parameters.Add(new Parameter { ParamName = "Long", Value = lng});
-        parameters.Add(new Parameter { ParamName = "Order", Value = order});
-        _moonContext.All.Invoke("jammersAndMotorStatusRequest", parameters.ToArray());
+        parameters.Add(new Parameter { ParamName = "serialNumber", Value = serialNumber });
+        parameters.Add(new Parameter { ParamName = "Lat", Value = lat });
+        parameters.Add(new Parameter { ParamName = "Long", Value = lng });
+        parameters.Add(new Parameter { ParamName = "Order", Value = order });
+        _moonContext.All.Invoke("TakingPossession", parameters.ToArray());
+    }
+
+    // -- Send to Sadid
+    [HttpPost]
+    [Route("bandTurnOnOff")]
+    public void bandTurnOnOff(string bandNumber, string state)
+    {
+        List<Parameter> parameters = new List<Parameter>();
+        parameters.Add(new Parameter { ParamName = "BandNumber", Value = bandNumber });
+        parameters.Add(new Parameter { ParamName = "State", Value = state });
+        _moonContext.All.Invoke("bandTurnOnOff", parameters.ToArray());
     }
 
     [HttpGet]

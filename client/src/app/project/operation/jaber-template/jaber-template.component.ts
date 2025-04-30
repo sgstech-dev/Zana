@@ -30,14 +30,14 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   public landing: boolean = false;
   public targetList: Target[] = [];
   public selectedTarget: Target;
-  public gtl_lat: number;
-  public gtl_lng: number;
+  public gtl_lat: number = 26.1;
+  public gtl_lng: number = 53.4;
   public goToHomeState: boolean = true;
   public goToLocationState: boolean = true;
   public flyingState: boolean = true;
   public landingState: boolean = true;
   private inProccessOperator: boolean = false;
-  public jaberState:boolean = false;
+  public jaberState:boolean = true;
 
   private readonly translate = inject(TranslateService);
 
