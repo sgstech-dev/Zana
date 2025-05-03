@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, EventEmitter, inject, Input, numberAttribute, OnInit, Output, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, inject, Input, NgZone, numberAttribute, OnInit, Output, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -46,16 +46,25 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
   currentScenario_id: string;
   public scenarios: Scenario[] = [];
   isPlayed: Map<number, boolean> = new Map<number, boolean>();
-
+  warningSituation: boolean = false;
   @Input() showToggle = true;
   @Input() showBranding = false;
 
   @Output() toggleSidenav = new EventEmitter<void>();
   @Output() toggleSidenavNotice = new EventEmitter<void>();
   readonly auth = inject(AuthService);
+  warningSituationAlarmAudio = new Audio();
+  normalSituationAlarmAudio = new Audio();
+
   constructor(
-    private scenarioService: ScenarioService
-  ) { }
+    private scenarioService: ScenarioService,
+    private ngZone: NgZone
+  ) {
+    this.warningSituationAlarmAudio.src = "/audio/r.mp3";
+    this.warningSituationAlarmAudio.load();
+    this.normalSituationAlarmAudio.src = "/audio/w.mp3";
+    this.normalSituationAlarmAudio.load();
+  }
   ngAfterContentInit(): void {
 
   }
@@ -64,7 +73,22 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
   }
   ngOnInit(): void {
     this.loadScenariosData();
-  //  this.authService.user().subscribe(user => (this.user = user));
+    this.initSignalR();
+    //  this.authService.user().subscribe(user => (this.user = user));
+  }
+
+  initSignalR(): void {
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().on("SendWarningSituation", (situation: boolean) => {
+        this.ngZone.run(() => {
+          this.warningSituation = situation;
+          if (this.warningSituation)
+            this.warningSituationAlarmAudio.play();
+          else
+            this.normalSituationAlarmAudio.play();
+        });
+      });
+    });
   }
 
   toggleFullscreen() {

@@ -11,3 +11,13 @@
   width: 100%;
   padding-top: 20px;
 }
+@keyframes blip {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.blinking-icon {
+  animation: blip 1s infinite;
+  width: 35px;
+}

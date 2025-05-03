@@ -12,7 +12,7 @@ export class TranslateLangService {
   load() {
     return new Promise<void>(resolve => {
       const browserLang = navigator.language;
-      const defaultLang = browserLang.match(/en-US|zh-CN|zh-TW|fa-ir/) ? browserLang : 'fa-ir';
+      const defaultLang = 'fa-ir';//browserLang.match(/en-US|zh-CN|zh-TW|fa-ir/) ? browserLang : 'fa-ir';
 
       this.settings.setLanguage(defaultLang);
       this.translate.setDefaultLang(defaultLang);

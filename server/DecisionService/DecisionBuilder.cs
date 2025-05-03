@@ -23,6 +23,7 @@ public class DecisionBuilder
         _moonContext = moonContext;
         _configuration = configuration;
     }
+
     public async Task LoadSystemsAsync(int scenario_id)
     {
         var db = _wgdbBContextFactory.CreateDbContext();
@@ -116,6 +117,7 @@ public class DecisionBuilder
             return null;
         }
     }
+
     public void MakeDecision()
     {
         foreach (var item in OperatorSystems)
@@ -128,6 +130,7 @@ public class DecisionBuilder
             }
         }
     }
+    
     public void UpdateState(Target target)
     {
         foreach (var item in OperatorSystems)

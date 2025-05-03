@@ -15,6 +15,10 @@ public class SensorService
     private Dictionary<int, SensorSystem> SensorSystems { get; set; }
     private IConfiguration _configuration;
     private DecisionBuilder _decisionBuilder;
+    private double lastDetectedTimeInSecond;
+    private DateTime lastDetectedTime;
+    private bool warningSituation = false;
+
     public SensorService(WGDBContextFactory wGDBContextFactory, IHubContext<ServerHub> hubContext, IConfiguration configuration, DecisionBuilder decisionBuilder)
     {
         SensorSystems = [];
@@ -22,6 +26,9 @@ public class SensorService
         _hubContext = hubContext;
         _configuration = configuration;
         _decisionBuilder = decisionBuilder;
+        lastDetectedTimeInSecond = 0;
+        lastDetectedTime = DateTime.Now;
+        checkWarningSituation();
     }
 
     private SensorSystem? loadSystem(string systemLibraryPath, params object?[]? args)
@@ -125,9 +132,40 @@ public class SensorService
 
     private void SensorSystems_OnTargetDetected(object sender, Target target)
     {
+        lastDetectedTime = DateTime.Now;
+
         _decisionBuilder.UpdateState(target);
         _decisionBuilder.MakeDecision();
     }
+
+    private void checkWarningSituation()
+    {
+        Task.Run(() =>
+        {
+            while (true)
+            {
+                lastDetectedTimeInSecond = (DateTime.Now - lastDetectedTime).TotalSeconds;
+                if (lastDetectedTimeInSecond > 60)  // 30 second without any target
+                {
+                    if (warningSituation)
+                    {
+                        _hubContext.Clients.All.SendAsync("SendWarningSituation", false).Wait();
+                    }
+                    warningSituation = false;
+                }
+                else
+                {
+                    if (!warningSituation)
+                    {
+                        _hubContext.Clients.All.SendAsync("SendWarningSituation", true).Wait();
+                    }
+                    warningSituation = true;
+                }
+                Task.Delay(100).Wait();
+            }
+        });
+    }
+
     public void PushData(Target target, string ipAddress)
     {
         foreach (var item in SensorSystems)
