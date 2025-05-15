@@ -70,5 +70,8 @@ namespace OperatorSystems
             var bearing = GisUtil.bearing(m_latitude, m_longitude, target.Latitude, target.Longitude);
             return (dist > m_startRange && dist < m_endRange && bearing > m_startAngle && bearing < m_endAngle);
         }
+        public virtual void CallCommand(string command,params object[] args){
+            return;
+        }
     }
 }

@@ -2,20 +2,22 @@
 <div class="row main-row">
   @for (item of gisObjectsAssined; track $index) {
   <div class="col-lg-3">
-    @if (item.gisObject.objectType.name == "SaherSystem") {
-      <app-saher-template [gisObject]=item.gisObject [target]="item.target"></app-saher-template>
-    }
-    @else if(item.gisObject.objectType.name == "JaberSystem"){
-      <app-jaber-template #JaberOperator [gisObject]=item.gisObject [target]="item.target"></app-jaber-template>
-    }
-    @else if(item.gisObject.objectType.name == "SadidSystem"){
-      <app-sadid-template #SadidOperator [gisObject]=item.gisObject [target]="item.target"></app-sadid-template>
-    }
-    @else if(item.gisObject.objectType.name == "JamerGombadiSystem"){
-      <app-jammer-gonbadi-template #JamerGonbadiOperator [gisObject]=item.gisObject [target]="item.target"></app-jammer-gonbadi-template>
-    }
-    @else {
-      <app-operation-template [gisObject]=item.gisObject [target]="item.target"></app-operation-template>
+    @switch (item.gisObject.objectType.name) {
+      @case ("SaherSystem") {
+        <app-saher-template [gisObject]=item.gisObject [target]="item.target"></app-saher-template>
+      }
+      @case ("JaberSystem") {
+        <app-jaber-template #JaberOperator [gisObject]=item.gisObject [target]="item.target"></app-jaber-template>
+      }
+      @case ("SadidSystem") {
+        <app-sadid-template #SadidOperator [gisObject]=item.gisObject [target]="item.target"></app-sadid-template>
+      }
+      @case ("JamerGombadiSystem") {
+        <app-jammer-gonbadi-template #JamerGonbadiOperator [gisObject]=item.gisObject [target]="item.target"></app-jammer-gonbadi-template>
+      }
+      @default {
+        <app-operation-template [gisObject]=item.gisObject [target]="item.target"></app-operation-template>
+      }
     }
   </div>
   }

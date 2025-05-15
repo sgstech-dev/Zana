@@ -3,7 +3,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MtxGridColumn, MtxGridColumnMenu, MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { GisObject } from 'app/project/services/gis-object.service';
-import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { Target } from 'app/project/services/target-service.service';
 import * as L from 'leaflet';
@@ -20,7 +19,6 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
 
 
   constructor(
-    private moonSocketService: MoonSocketService,
     private ngZone: NgZone) { }
 
   @Input() gisObject: GisObject;
@@ -65,13 +63,13 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  targetSelected($event: any[]) {
-    this.selectedTarget = $event.at(0);
-    if (!this.inProccessOperator && this.jammerGonbadiState) {
-      this.setStateOperators(true);
-      this.inProccessOperator = true;
-    }
-  }
+  // targetSelected($event: any[]) {
+  //   this.selectedTarget = $event.at(0);
+  //   if (!this.inProccessOperator && this.jammerGonbadiState) {
+  //     this.setStateOperators(true);
+  //     this.inProccessOperator = true;
+  //   }
+  // }
 
   private initializeMap() {
     // this.map = L.map(this.getMapId(), {
@@ -100,7 +98,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel1Togle() {
     this.Chanel1 = !this.Chanel1;
     console.log("Chanel1:", this.Chanel1);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel1", this.Chanel1?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel1",this.Chanel1?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -108,7 +106,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel2Togle() {
     this.Chanel2 = !this.Chanel2;
     console.log("Chanel2:", this.Chanel2);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel2", this.Chanel2?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel2",this.Chanel2?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -116,7 +114,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel3Togle() {
     this.Chanel3 = !this.Chanel3;
     console.log("Chanel3:", this.Chanel3);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel3", this.Chanel3?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel3",this.Chanel3?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -124,7 +122,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel4Togle() {
     this.Chanel4 = !this.Chanel4;
     console.log("Chanel4:", this.Chanel4);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel4", this.Chanel4?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel4",this.Chanel4?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -132,7 +130,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel5Togle() {
     this.Chanel5 = !this.Chanel5;
     console.log("Chanel5:", this.Chanel5);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel5", this.Chanel5?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel5",this.Chanel5?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -140,7 +138,7 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   Chanel6Togle() {
     this.Chanel6 = !this.Chanel6;
     console.log("Chanel6:", this.Chanel6);
-    this.moonSocketService.jammerGonbadiOnOff("Chanel6", this.Chanel6?"On":"Off").subscribe(() => {
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel6",this.Chanel6?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -148,7 +146,8 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
   AllChanelTogle() {
     this.AllChanel = !this.AllChanel;
     console.log("All Chanel");
-    this.moonSocketService.jammerGonbadiOnOff("All", this.Chanel6?"On":"Off").subscribe(() => {
+    
+    SignalRService.getConnection().invoke("jammerGonbadiOnOff","All",this.AllChanel?"On":"Off").then(() =>{
       this.setStateOperators(this.AllChanel);
     });
   }

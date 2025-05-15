@@ -461,7 +461,7 @@ export default class MapComponent implements AfterViewInit, OnInit, OnDestroy {
         if (mapAddress.type == "wms") {
           const mapLayer = L.tileLayer.wms(mapAddress.address, {
             minZoom: mapAddress.minZoomLevel, maxZoom: mapAddress.maxZoomLevel,
-            layers: mapAddress.layers,   // Replace with the specific WMS layer name
+            layers: mapAddress.baseLayers,   // Replace with the specific WMS layer name
             format: mapAddress.format,
             transparent: mapAddress.transparent,
             version: '1.1.1',

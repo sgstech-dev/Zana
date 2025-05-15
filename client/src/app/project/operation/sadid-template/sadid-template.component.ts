@@ -3,7 +3,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MtxGridColumn, MtxGridColumnMenu, MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { GisObject } from 'app/project/services/gis-object.service';
-import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { Target } from 'app/project/services/target-service.service';
 import * as L from 'leaflet';
@@ -18,7 +17,6 @@ import * as L from 'leaflet';
 export class SadidTemplateComponent implements OnInit, AfterViewInit {
 
   constructor(
-    private moonSocketService: MoonSocketService,
     private ngZone: NgZone) { }
 
   @Input() gisObject: GisObject;
@@ -92,7 +90,7 @@ export class SadidTemplateComponent implements OnInit, AfterViewInit {
   Band1Togle() {
     this.Band1 = !this.Band1;
     console.log("Band1:", this.Band1);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "backToHome").subscribe(() => {
+    SignalRService.getConnection().invoke("bandTurnOnOff","Band1",this.Band1?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -100,7 +98,7 @@ export class SadidTemplateComponent implements OnInit, AfterViewInit {
   Band2Togle() {
     this.Band2 = !this.Band2;
     console.log("Band2:", this.Band2);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, this.gtl_lat, this.gtl_lng, "sendLocation").subscribe(() => {
+    SignalRService.getConnection().invoke("bandTurnOnOff","Band2",this.Band2?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -108,7 +106,7 @@ export class SadidTemplateComponent implements OnInit, AfterViewInit {
   Band3Togle() {
     this.Band3 = !this.Band3;
     console.log("Band3:", this.Band3);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "takeOff").subscribe(() => {
+    SignalRService.getConnection().invoke("bandTurnOnOff","Band3",this.Band3?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
@@ -116,9 +114,8 @@ export class SadidTemplateComponent implements OnInit, AfterViewInit {
   Band4Togle() {
     this.Band4 = !this.Band4;
     console.log("Band4:", this.Band4);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "Band4").subscribe(() => {
+    SignalRService.getConnection().invoke("bandTurnOnOff","Band4",this.Band4?"On":"Off").then(() =>{
       this.setStateOperators(false);
     });
   }
-
 }

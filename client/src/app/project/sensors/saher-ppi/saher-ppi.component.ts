@@ -3,7 +3,6 @@ import { MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTimeUtilityService } from 'app/project/services/date-time-utility.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { SensorCompenent } from '../sensor-component';
 
@@ -28,8 +27,7 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
   motor: boolean;
 
   constructor(
-    private dateTimeUtilityService: DateTimeUtilityService,
-    private moonSocketService: MoonSocketService,
+    private dateTimeUtilityService: DateTimeUtilityService
   ) {
     super();
   }
@@ -38,9 +36,9 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
     this.initSignalR();
   }
   ngOnInit(): void {
-    this.moonSocketService.saherStatusRequest().subscribe();
+    SignalRService.getConnection().invoke("saherStatusRequest");
     setInterval(() => {
-      this.moonSocketService.saherStatusRequest().subscribe();
+      SignalRService.getConnection().invoke("saherStatusRequest");
     }, 3000);
   }
 
@@ -57,7 +55,7 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
   motorTogle() {
     this.motor = !this.motor;
     console.log("Motor:", this.motor);
-    this.moonSocketService.saher_TurnOn_Off("motor").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off","motor");
   }
 
   setColumns(): void {

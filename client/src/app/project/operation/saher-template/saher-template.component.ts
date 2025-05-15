@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, Input, input, NgZone, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, NgZone, OnInit } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GisObject } from 'app/project/services/gis-object.service';
-import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { Target } from 'app/project/services/target-service.service';
 import * as L from 'leaflet';
+import { CommandName } from 'protractor';
 
 @Component({
   selector: 'app-saher-template',
@@ -16,7 +16,6 @@ import * as L from 'leaflet';
 export class SaherTemplateComponent implements OnInit, AfterViewInit {
 
   constructor(
-    private moonSocketService: MoonSocketService,
     private ngZone: NgZone
   ) { }
 
@@ -36,9 +35,9 @@ export class SaherTemplateComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initializeMap();
-    this.moonSocketService.saherStatusRequest().subscribe();
+    SignalRService.getConnection().invoke("saherStatusRequest")
     setInterval(() => {
-      this.moonSocketService.saherStatusRequest().subscribe();
+      SignalRService.getConnection().invoke("saherStatusRequest");
     }, 3000);
   }
 
@@ -78,39 +77,43 @@ export class SaherTemplateComponent implements OnInit, AfterViewInit {
     this.jammer900 = this.jammerAll;
     this.jammerGPS = this.jammerAll;
     this.jammerAll = this.jammerAll;
-    this.moonSocketService.saher_TurnOn_Off("JammerAll").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"JammerAll");
+    // SignalRService.getConnection().invoke("callCommand",{
+    //   commandName: "saher_TurnOn_Off",
+    //   gisObjectId: this.gisObject.id,
+    //   args: ["JammerAll"]});
   }
   motorTogle() {
     this.motor = !this.motor;
     console.log("Motor:", this.motor);
-    this.moonSocketService.saher_TurnOn_Off("motor").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"motor");
   }
 
   jammer2_4Togle() {
     this.jammer2_4 = !this.jammer2_4;
     console.log("Jammer2.4 :", this.jammer2_4);
-    this.moonSocketService.saher_TurnOn_Off("Jammer2.4").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"Jammer2.4");
   }
 
   jammer5_8Togle() {
     this.jammer5_8 = !this.jammer5_8;
     console.log("Jammer5.8 :", this.jammer5_8);
-    this.moonSocketService.saher_TurnOn_Off("Jammer5.8").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"Jammer5.8");
   }
   jammer400Togle() {
     this.jammer400 = !this.jammer400;
     console.log("Jammer400 :", this.jammer400);
-    this.moonSocketService.saher_TurnOn_Off("Jammer400").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"Jammer400");
   }
   jammer900Togle() {
     this.jammer900 = !this.jammer900;
     console.log("Jammer900 :", this.jammer900);
-    this.moonSocketService.saher_TurnOn_Off("Jammer900").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"Jammer900");
   }
   jammerGPSTogle() {
     this.jammerGPS = !this.jammerGPS;
     console.log("JammerGPS :", this.jammerGPS);
-    this.moonSocketService.saher_TurnOn_Off("JammerGPS").subscribe();
+    SignalRService.getConnection().invoke("saher_TurnOn_Off" ,"JammerGPS");
   }
 
 }

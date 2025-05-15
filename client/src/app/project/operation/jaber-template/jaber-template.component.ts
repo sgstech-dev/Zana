@@ -3,7 +3,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MtxGridColumn, MtxGridColumnMenu, MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { GisObject } from 'app/project/services/gis-object.service';
-import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
 import { Target } from 'app/project/services/target-service.service';
 import * as L from 'leaflet';
@@ -18,7 +17,6 @@ import * as L from 'leaflet';
 export class JaberTemplateComponent implements OnInit, AfterViewInit {
 
   constructor(
-    private moonSocketService: MoonSocketService,
     private ngZone: NgZone) { }
 
   @Input() gisObject: GisObject;
@@ -37,7 +35,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   public flyingState: boolean = true;
   public landingState: boolean = true;
   private inProccessOperator: boolean = false;
-  public jaberState:boolean = true;
+  public jaberState: boolean = true;
 
   private readonly translate = inject(TranslateService);
 
@@ -60,8 +58,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
 
   targetSelected($event: any[]) {
     this.selectedTarget = $event.at(0);
-    if(!this.inProccessOperator && this.jaberState)
-    {
+    if (!this.inProccessOperator && this.jaberState) {
       this.setStateOperators(true);
       this.inProccessOperator = true;
     }
@@ -92,7 +89,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   goToHomeTogle() {
     this.goToHome = !this.goToHome;
     console.log("goToHome:", this.goToHome);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "backToHome").subscribe(() => {
+     SignalRService.getConnection().invoke("takingPossession",this.selectedTarget.targetId, 0, 0, "backToHome").then(() => {
       this.setStateOperators(false);
     });
   }
@@ -100,7 +97,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   goToLocationTogle() {
     this.goToLocation = !this.goToLocation;
     console.log("goToLocation:", this.goToLocation);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, this.gtl_lat, this.gtl_lng, "sendLocation").subscribe(() => {
+    SignalRService.getConnection().invoke("takingPossession",this.selectedTarget.targetId, this.gtl_lat, this.gtl_lng, "sendLocation").then(() => {
       this.setStateOperators(false);
     });
   }
@@ -108,7 +105,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   flyingTogle() {
     this.flying = !this.flying;
     console.log("flying:", this.flying);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "takeOff").subscribe(() => {
+    SignalRService.getConnection().invoke("takingPossession",this.selectedTarget.targetId, 0, 0, "takeOff").then(() => {
       this.setStateOperators(false);
     });
   }
@@ -116,7 +113,7 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
   landingTogle() {
     this.landing = !this.landing;
     console.log("landing:", this.landing);
-    this.moonSocketService.takingPossession(this.selectedTarget.targetId, 0, 0, "landing").subscribe(() => {
+    SignalRService.getConnection().invoke("takingPossession",this.selectedTarget.targetId, 0, 0, "landing").then(() => {
       this.setStateOperators(false);
     });
   }
@@ -171,5 +168,14 @@ export class JaberTemplateComponent implements OnInit, AfterViewInit {
     };
 
     return format.replace(/yyyy|MM|dd|HH|mm|ss/g, matched => map[matched]);
+  }
+
+  updateTargetList(target: Target) {
+    let existsTargetIdx = this.targetList.findIndex((t: Target) => t.targetId == target.targetId);
+    if (existsTargetIdx < 0)
+      this.targetList.unshift(target);
+    else
+      this.targetList[existsTargetIdx] = target;
+    this.targetList = [...this.targetList];
   }
 }

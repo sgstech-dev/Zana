@@ -40,7 +40,7 @@ export default class SensorPageComponent implements AfterViewInit {
             break;
           case "KashefSystem": this.radarPPI.updateTargetList(target);
             break;
-          default://this.dfPPI.updateTargetList(target);
+          default: this.dfPPI.updateTargetList(target);
             break;
         }
       });

@@ -7,7 +7,7 @@ import { HubConnectionState } from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class SignalRService {
-  private static connection: any = undefined;
+  private static connection: signalR.HubConnection = undefined;
 
   constructor() { }
   public static startConnection(): Promise<void> {
@@ -32,7 +32,7 @@ export class SignalRService {
       });
   }
 
-  public static getConnection():any{
+  public static getConnection():signalR.HubConnection{
     return this.connection;
   }
 }
