@@ -1,16 +1,11 @@
-import { AfterViewInit, Component, inject, Input, NgZone, numberAttribute, OnInit, ViewChild } from '@angular/core';
-import { randomUUID, UUID } from 'crypto';
-import * as L from 'leaflet';
-import { v4 as uuidv4 } from 'uuid';
-import { PageHeaderComponent } from "../../../shared/components/page-header/page-header.component";
-import { Target } from 'app/project/services/target-service.service';
-import { MtxGridColumn, MtxGridModule } from '@ng-matero/extensions/grid';
+import { AfterViewInit, Component, inject, Input, NgZone, numberAttribute, OnInit } from '@angular/core';
+import { MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTimeUtilityService } from 'app/project/services/date-time-utility.service';
-import { PpiUtilityService } from 'app/project/services/ppi-utility.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MoonSocketService } from 'app/project/services/moon-socket.service';
 import { SignalRService } from 'app/project/services/signal-r.service';
+import { SensorCompenent } from '../sensor-component';
 
 @Component({
   selector: 'app-saher-ppi',
@@ -19,32 +14,28 @@ import { SignalRService } from 'app/project/services/signal-r.service';
   templateUrl: './saher-ppi.component.html',
   styleUrl: './saher-ppi.component.scss'
 })
-export class SaherPPIComponent implements OnInit, AfterViewInit {
-  @Input({ required: true, transform: numberAttribute }) centerLat: number;
-  @Input({ required: true, transform: numberAttribute }) centerLng: number;
-  @Input({ required: true, transform: numberAttribute }) radius: number;
-  @Input({ required: true }) sensorName: string;
-  @Input({ required: true }) color: string = "red";
+export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterViewInit {
 
-  mapId: UUID = uuidv4();
-  private center: L.LatLng;
-  private map: L.Map;
-  public directionList: Target[] = [];
+  @Input({ required: true, transform: numberAttribute }) override centerLat: number;
+  @Input({ required: true, transform: numberAttribute }) override centerLng: number;
+  @Input({ required: true, transform: numberAttribute }) override radius: number;
+  @Input({ required: true }) override sensorName: string;
+
+  //public directionList: Target[] = [];
   private readonly translate = inject(TranslateService);
-  isLoading: boolean = false;
+  private readonly ngZoneForMotor = inject(NgZone);
+
   motor: boolean;
 
   constructor(
     private dateTimeUtilityService: DateTimeUtilityService,
-    private ppiUtilityService: PpiUtilityService,
     private moonSocketService: MoonSocketService,
-    private ngZone: NgZone
-  ) { }
+  ) {
+    super();
+  }
   ngAfterViewInit(): void {
-    this.center = L.latLng(this.centerLat, this.centerLng);
-    this.initializeMap();
+    super.ngAfterViewInit();
     this.initSignalR();
-    this.ppiUtilityService.drawPPIAxis(this.map, this.center, this.radius);
   }
   ngOnInit(): void {
     this.moonSocketService.saherStatusRequest().subscribe();
@@ -54,14 +45,14 @@ export class SaherPPIComponent implements OnInit, AfterViewInit {
   }
 
   initSignalR(): void {
-      SignalRService.startConnection().then(() => {
-        SignalRService.getConnection().on("jammersAndMotorStatus", (motor: boolean, jammer2_4: boolean, jammer5_8: boolean, jammer400: boolean, jammer900: boolean, jammersGPS: boolean, autoControl: boolean) => {
-          this.ngZone.run(() => {
-            this.motor = motor;
-          });
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().on("jammersAndMotorStatus", (motor: boolean, jammer2_4: boolean, jammer5_8: boolean, jammer400: boolean, jammer900: boolean, jammersGPS: boolean, autoControl: boolean) => {
+        this.ngZoneForMotor.run(() => {
+          this.motor = motor;
         });
       });
-    }
+    });
+  }
 
   motorTogle() {
     this.motor = !this.motor;
@@ -69,71 +60,53 @@ export class SaherPPIComponent implements OnInit, AfterViewInit {
     this.moonSocketService.saher_TurnOn_Off("motor").subscribe();
   }
 
-  private initializeMap() {
-    this.map = L.map(this.mapId, {
-      contextmenu: true,
-      center: this.center,
-      zoom: 7,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      zoomControl: false,
-      attributionControl: false,
-      dragging: false, // Disable panning
-      scrollWheelZoom: false, // Disable zooming with the scroll wheel
-      doubleClickZoom: false, // Disable zooming on double click
-      touchZoom: false,
-    });
-  }
-
-  public addDirection(theta: number, range: number = this.radius) {
-    this.ppiUtilityService.drawFadingLine(this.map, this.center, range, theta, this.color);
-  }
-
-
-  columns: MtxGridColumn[] = [
-    {
-      header: this.translate.stream('theta'),
-      field: 'theta',
-      sortable: false,
-      width: '100%',
-      formatter: (rowData) => {
-        return rowData.theta.toFixed(2);
+  setColumns(): void {
+    this.columns = [
+      {
+        header: this.translate.stream('theta'),
+        field: 'theta',
+        sortable: false,
+        width: '100%',
+        formatter: (rowData) => {
+          return rowData.theta.toFixed(2);
+        },
       },
-    },
-    {
-      header: this.translate.stream('distance'),
-      field: 'range',
-      sortable: false,
-      width: '100%',
-      formatter: (rowData) => {
-        return rowData.range.toFixed(2);
+      {
+        header: this.translate.stream('distance'),
+        field: 'range',
+        sortable: false,
+        width: '100%',
+        formatter: (rowData) => {
+          return rowData.range.toFixed(2);
+        },
       },
-    },
-    {
-      header: this.translate.stream('deviceType'),
-      field: 'deviceType',
-      sortable: false,
-      width: '100%'
-    },
-    {
-      header: this.translate.stream('bandWidth'),
-      field: 'centerFreq',
-      sortable: false,
-      width: '100%'
-    },
-    {
-      header: this.translate.stream('snr'),
-      field: 'snr',
-      sortable: false,
-      width: '100%'
-    },
-    {
-      header: this.translate.stream('detectedTime'),
-      field: 'detectedTime',
-      sortable: false,
-      width: '100%',
-      formatter: (rowData) => {
-        return this.dateTimeUtilityService.formatDate(rowData.detectedTime, 'yyyy-MM-dd HH:mm:ss');
+      {
+        header: this.translate.stream('deviceType'),
+        field: 'deviceType',
+        sortable: false,
+        width: '100%'
+      },
+      {
+        header: this.translate.stream('bandWidth'),
+        field: 'centerFreq',
+        sortable: false,
+        width: '100%'
+      },
+      {
+        header: this.translate.stream('snr'),
+        field: 'snr',
+        sortable: false,
+        width: '100%'
+      },
+      {
+        header: this.translate.stream('detectedTime'),
+        field: 'detectedTime',
+        sortable: false,
+        width: '100%',
+        formatter: (rowData) => {
+          return this.dateTimeUtilityService.formatDate(rowData.detectedTime, 'yyyy-MM-dd HH:mm:ss');
+        }
       }
-    }
-  ]
+    ]
+  }
 }

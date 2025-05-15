@@ -61,7 +61,7 @@ export class DrawingUtilityService {
         fillColor: color,
         fill: fill,
         fillOpacity: 0.3,
-        weight: 1,
+        weight: 2,
         dashArray: '3',
         opacity: 1.0,
         stroke: stroke

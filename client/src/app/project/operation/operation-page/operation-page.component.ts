@@ -8,11 +8,12 @@ import { NgFor } from '@angular/common';
 import { SaherTemplateComponent } from '../saher-template/saher-template.component';
 import { JaberTemplateComponent } from "../jaber-template/jaber-template.component";
 import { SadidTemplateComponent } from "../sadid-template/sadid-template.component";
+import { JammerGonbadiTemplateComponent } from "../jammer-gonbadi-template/jammer-gonbadi-template.component";
 
 @Component({
   selector: 'app-operation-page',
   standalone: true,
-  imports: [PageHeaderComponent, OperationTemplateComponent, SaherTemplateComponent, JaberTemplateComponent, SadidTemplateComponent],
+  imports: [PageHeaderComponent, OperationTemplateComponent, SaherTemplateComponent, JaberTemplateComponent, SadidTemplateComponent, JammerGonbadiTemplateComponent],
   templateUrl: './operation-page.component.html',
   styleUrl: './operation-page.component.scss',
   changeDetection: ChangeDetectionStrategy.Default

@@ -11,6 +11,9 @@
     @else if(item.gisObject.objectType.name == "SadidSystem"){
       <app-sadid-template #SadidOperator [gisObject]=item.gisObject [target]="item.target"></app-sadid-template>
     }
+    @else if(item.gisObject.objectType.name == "JamerGombadiSystem"){
+      <app-jammer-gonbadi-template #JamerGonbadiOperator [gisObject]=item.gisObject [target]="item.target"></app-jammer-gonbadi-template>
+    }
     @else {
       <app-operation-template [gisObject]=item.gisObject [target]="item.target"></app-operation-template>
     }

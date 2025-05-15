@@ -13,6 +13,7 @@ export interface MapAddress{
   id :number,
   name: string,
   address :string,
+  baseLayers,
   layers :string,
   format :string,
   transparent :boolean,

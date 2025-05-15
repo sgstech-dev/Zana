@@ -1,0 +1,66 @@
+
+<div class="operationContainer">
+    <div id="info">
+        <div>
+            <img class="info-img" [src]="gisObject.objectType.picBase64" />
+        </div>
+        <div>
+            @if(!jammerGonbadiState){
+                <img src="/images/icons/Bullets-red.png" class="blinking-icon"  />
+            }
+            @else {
+                <img src="/images/icons/Bullets-green.png" class="none-blinking-icon" />
+            }
+            <span>{{gisObject.name}}</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="row">
+            <div class="operationMap">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="AllChanel" (change)="AllChanelTogle()">
+                            All Chanel 
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel1" [disabled]="!Chanel1State" (change)="Chanel1Togle()">
+                            Chanel 1
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel2" [disabled]="!Chanel2State" (change)="Chanel2Togle()">
+                            Chanel 2
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel3" [disabled]="!Chanel3State" (change)="Chanel3Togle()">
+                            Chanel 3
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel4" [disabled]="!Chanel4State" (change)="Chanel4Togle()">
+                            Chanel 4
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel3" [disabled]="!Chanel5State" (change)="Chanel5Togle()">
+                            Chanel 5
+                        </mat-slide-toggle>
+                    </div>
+                    <div class="col-lg-6">
+                        <mat-slide-toggle color="primary" [checked]="Chanel4" [disabled]="!Chanel6State" (change)="Chanel6Togle()">
+                            Chanel 6
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

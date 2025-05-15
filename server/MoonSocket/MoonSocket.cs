@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Reflection.Metadata;
 using System.Text;
@@ -82,6 +84,39 @@ public class MoonSocket : ControllerBase
         _moonContext.All.Invoke("bandTurnOnOff", parameters.ToArray());
     }
 
+    // -- Send to JammerGonbadi
+    [HttpPost]
+    [Route("jammerGonbadiOnOff")]
+    public void jammerGonbadiOnOff(string chanelNumber, string state)
+    {
+        string dataStr = "";
+        UdpClient udpClient = new UdpClient(9001);
+        udpClient.EnableBroadcast = true; // فعال‌سازی برادکست
+        var endPoint = new IPEndPoint(IPAddress.Parse("192.168.0.43"), 9003);
+        try
+        {
+        if (chanelNumber == "All")
+        {
+            if (state == "On")
+            {
+                dataStr = "AA550000000000000000000000000000000000000000FFFF0000000055BB";
+            }
+            if (state == "Off")
+            {
+                dataStr = "AA55000000000000000000000000000000000000000000000000000055BB";
+            }
+            byte[] data = HexStringToByteArray(dataStr);
+
+            udpClient.Send(data, data.Length, endPoint);
+        }
+        }
+        catch (Exception ex)
+        {}
+        finally{
+            udpClient.Close();
+        }
+    }
+
     [HttpGet]
     [Route("/ws")]
     public async Task Get()
@@ -110,6 +145,14 @@ public class MoonSocket : ControllerBase
     private void OnClose(Guid clientId)
     {
         _moonContext.RemoveClient(clientId);
+    }
+
+        static byte[] HexStringToByteArray(string hex)
+    {
+        return Enumerable.Range(0, hex.Length)
+                         .Where(x => x % 2 == 0)
+                         .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                         .ToArray();
     }
     #endregion
 }

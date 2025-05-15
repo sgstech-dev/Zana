@@ -18,7 +18,7 @@ public class JaberSensor : SensorSystem
     }
     public override void PushData(Target target, string ipAddress)
     {
-        if (m_ipAddress != ipAddress)
+        if (!m_ipAddress.Contains(ipAddress!.Trim()))
             return;
         if (target == null)
             return;

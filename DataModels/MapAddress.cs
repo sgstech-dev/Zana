@@ -9,6 +9,7 @@ namespace Server.models
         public int Id { get; set; }
         public string Name { get; set; } = "";
         public string Address { get; set; } = "";
+        public string BaseLayers { get; set; } = "";
         public string Layers { get; set; } = "";
         public string Format { get; set; } = "";
         public bool Transparent { get; set; } = true;

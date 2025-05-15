@@ -1,0 +1,114 @@
+.operationMap {
+    width: 100%;
+    display: table;
+    border-radius: 5px;
+    padding: 10px;
+    border-style: solid;
+    border-color: #1a0d0d;
+    border-width: 1px;
+    box-shadow: 1px 1px 4px #2d0303;
+    margin: 12px;
+}
+
+.operationMap .row {
+    padding: 5px 0;
+}
+
+#info {
+    display: flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+    padding-top: 10px;
+    position: absolute;
+    background-color: #0c1220;
+    top: 0px;
+    border-radius: 6px;
+    box-shadow: 3px 5px 8px black;
+    right: 25px;
+    left: 25px;
+}
+
+#info div {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#info div span {
+    display: inline-block;
+    position: absolute;
+    top: 22px;
+    font-size: larger;
+    text-shadow: 3px 3px 1px black;
+}
+
+#info div img {
+    display: inline-block;
+}
+
+.info-img {
+    width: 65px;
+    height: 45px;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: black;
+    box-shadow: 1px 1px 4px black;
+}
+
+.operationContainer {
+    box-shadow: 1px 1px 7px black;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    display: flex;
+    margin-top: 60px;
+    padding-top: 10px;
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+@keyframes blip {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking-icon {
+    animation: blip 1s infinite;
+    display: inline-block;
+    width: 24px;
+    margin: 12px;
+}
+
+.none-blinking-icon{
+    display: inline-block;
+    width: 24px;
+    margin: 12px;
+}
+
+.operator-row {
+    display: table-row;
+}
+
+.operator-col {
+    display: table-cell;
+}
+
+.main-content {
+    width: 100%;
+}
+
+.targets {
+    width: 100%;
+    padding: 10px;
+}

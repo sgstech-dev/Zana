@@ -20,6 +20,10 @@ import { PpiUtilityService } from '../services/ppi-utility.service';
 import { DrawingUtilityService } from '../services/drawing-utility.service';
 import { TargetTableComponent } from "../scenario/target-table/target-table.component";
 
+export interface MapLayerInfo {
+  layer: string,
+  title: string;
+}
 
 @Component({
   selector: 'app-map',
@@ -28,15 +32,19 @@ import { TargetTableComponent } from "../scenario/target-table/target-table.comp
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
+
 export default class MapComponent implements OnInit, OnDestroy {
   public map!: L.Map;
   public currentScenario_id: number;
   public gisObjectLayers: L.FeatureGroup = new L.FeatureGroup();
-  
+
   private targetLayers: L.FeatureGroup = new L.FeatureGroup();
   private gisObjectZones: Map<number, L.Polygon> = new Map<number, L.Polygon>;
   private scenarioSubscription: Subscription;
   private targets: Map<string, L.Marker> = new Map<string, L.Marker>;
+  private mapLayers: L.Control.Layers;
+  private overlayMaps = {};
+
   @ViewChild('aircraftTable') aircraftTable: TargetTableComponent;
 
   constructor(
@@ -62,6 +70,12 @@ export default class MapComponent implements OnInit, OnDestroy {
     this.createBaseMapSwitcher();
     this.map.addLayer(this.gisObjectLayers);
     this.map.addLayer(this.targetLayers);
+    let self = this;
+    this.map.on("basemapChange", function (e) {
+      let mapLayersInfo: MapLayerInfo[] = [];
+      mapLayersInfo = self.getMapLayersInfo(e.layer.layers);
+      self.switchBaseMap(e.layer._url, mapLayersInfo);
+    });
     this.scenarioSubscription = this.scenarioService.scenarioChange$.subscribe(scenarioId => {
       this.changeScenario(scenarioId);
     });
@@ -92,12 +106,10 @@ export default class MapComponent implements OnInit, OnDestroy {
         if (target.targetType == TargetType.Direction) {
           this.gisObjectLayers.getLayers().forEach(layer => {
             if (layer.id == target.detector_id) {
-              this.addDirection(layer, target.theta, layer.endRange, 'red',layer.color);
+              this.addDirection(layer, target.theta, layer.endRange, 'red', layer.color);
             }
           });
         }
-        //this.aircraftTable.updateTable(this.currentScenario_id);
-        //  console.log(targetState);
       });
     });
   }
@@ -151,21 +163,24 @@ export default class MapComponent implements OnInit, OnDestroy {
   // In this method , Base map layers has been created .
   private createBaseMapSwitcher() {
     this.mapAddressSService.get().subscribe((mapAddresses: MapAddress[]) => {
-      let baseMaps: object[];
-      // eslint-disable-next-line prefer-const
+      let baseMaps: any[];
       baseMaps = [];
       mapAddresses.forEach(mapAddress => {
         if (mapAddress.type == "wms") {
           const mapLayer = L.tileLayer.wms(mapAddress.address, {
             minZoom: mapAddress.minZoomLevel, maxZoom: mapAddress.maxZoomLevel,
-            layers: mapAddress.layers,   // Replace with the specific WMS layer name
+            layers: mapAddress.baseLayers,   // Replace with the specific WMS layer name
             format: mapAddress.format,
             transparent: mapAddress.transparent,
             version: '1.1.1',
             crs: L.CRS.EPSG3857             // Set the WMS version if needed
           });
-          mapLayer.addTo(this.map);
-          this.map.panTo([mapAddress.centerLatitude, mapAddress.centerLongitude]);
+          //mapLayer.addTo(this.map);
+          mapLayer.layers = mapAddress.layers;
+          mapLayer.address = mapAddress.address;
+          mapLayer.centerLatitude = mapAddress.centerLatitude;
+          mapLayer.centerLongitude = mapAddress.centerLongitude;
+          //this.map.panTo([mapAddress.centerLatitude, mapAddress.centerLongitude]);
           baseMaps.push({
             layer: mapLayer,
             icon: '/images/mapThumnails/sat.png',
@@ -174,8 +189,8 @@ export default class MapComponent implements OnInit, OnDestroy {
         }
         else {
           const mapLayer = L.tileLayer(mapAddress.address, { minZoom: mapAddress.minZoomLevel, maxZoom: mapAddress.maxZoomLevel });
-          mapLayer.addTo(this.map);
-          this.map.panTo([mapAddress.centerLatitude, mapAddress.centerLongitude]);
+          //mapLayer.addTo(this.map);
+          //this.map.panTo([mapAddress.centerLatitude, mapAddress.centerLongitude]);
           baseMaps.push({
             layer: mapLayer,
             icon: '/images/mapThumnails/sat.png',
@@ -183,13 +198,59 @@ export default class MapComponent implements OnInit, OnDestroy {
           });
         }
       });
+      baseMaps[0].layer.addTo(this.map);
+      this.switchBaseMap(baseMaps[0].layer.address, this.getMapLayersInfo(baseMaps[0].layer.layers))
+      this.map.panTo([baseMaps[0].layer.centerLatitude, baseMaps[0].layer.centerLongitude]);
       var position: String;
       if (this.settingsService.options.dir == "ltr")
         position = 'bottomleft';
       else
         position = 'bottomright';
-      new L.basemapsSwitcher(baseMaps, { position: position }).addTo(this.map);
+      let switcher = new L.basemapsSwitcher(baseMaps, { position: position });
+      switcher.addTo(this.map);
     });
+  }
+
+  private getMapLayersInfo(strLayers: string) {
+    let result: MapLayerInfo[] = [];
+    strLayers.split(',').forEach(element => {
+      let tmpInfo: MapLayerInfo = {
+        layer: '',
+        title: ''
+      };
+      tmpInfo.layer = element.split(':')[0];
+      tmpInfo.title = element.split(':')[1];
+      result.push(tmpInfo);
+      return true;
+    });
+    return result;
+  }
+
+  private switchBaseMap(mapUrl: string, layers: MapLayerInfo[]) {
+    if (!layers) {
+      return;
+    }
+    Object.values(this.overlayMaps).forEach(layer => {
+      if (this.map.hasLayer(layer)) {
+        this.map.removeLayer(layer);
+      }
+      this.mapLayers.removeLayer(layer);
+    });
+    this.overlayMaps = {};
+    layers.forEach(element => {
+      var wmsLayer = L.tileLayer.wms(mapUrl, {
+        layers: element.layer,
+        format: 'image/png',
+        transparent: true,
+      });
+      this.overlayMaps["\"" + element.title + "\""] = wmsLayer;
+    });
+    if (this.mapLayers) {
+      this.map.removeLayer(this.mapLayers);
+      this.mapLayers.remove()
+      this.mapLayers = undefined;
+    }
+    this.mapLayers = L.control.layers(null, this.overlayMaps, { autoZIndex: false }).addTo(this.map);
   }
 
   private loadMarkers(scenario_id) {
@@ -259,7 +320,7 @@ export default class MapComponent implements OnInit, OnDestroy {
       gisObjectlayer.threshold = threshold;
       gisObjectlayer.endRange = endRange;
       gisObjectlayer.color = color;
-      this.aircraftTable.setGisObjectColors(gisObjectlayer.gisObject.id,color);
+      this.aircraftTable.setGisObjectColors(gisObjectlayer.gisObject.id, color);
       if (startRange !== undefined && endRange !== undefined && startAngle !== undefined && endAngle !== undefined) {
         gisObjectlayer.setStyle({ fillColor: color, color: color });
         let sc = this.drawingUtilityService.addSemiCircle(this.map, gisObjectlayer.getLatLng(), startRange, endRange, startAngle, endAngle, color);
@@ -313,16 +374,16 @@ export default class MapComponent implements OnInit, OnDestroy {
     return (brng + 360) % 360;
   }
 
-  private addDirection(gisObjectlayer: L.Marker, theta: number, range: number, color: any, thresholdColor:any = "#00000000") {
+  private addDirection(gisObjectlayer: L.Marker, theta: number, range: number, color: any, thresholdColor: any = "#00000000") {
     let centerLatLng: L.LatLng = gisObjectlayer.getLatLng();
-    
-    this.ppiUtilityService.drawFadingLine(this.map, centerLatLng, range, theta, color,3,thresholdColor);
+
+    this.ppiUtilityService.drawFadingLine(this.map, centerLatLng, range, theta, color, 3, thresholdColor);
   }
 
   private drawFadingLine(gisObjectlayer: L.Marker, lat: number, lng: number, color: any, theta: number, threshold: number, range: number) {
     // Create a circle with full opacity
     let centerLatLng: L.LatLng = gisObjectlayer.getLatLng();
-    let sc = this.drawingUtilityService.addSemiCircle(this.map , gisObjectlayer.getLatLng(), 0, range, theta - threshold, theta + threshold, gisObjectlayer.color, true, false);
+    let sc = this.drawingUtilityService.addSemiCircle(this.map, gisObjectlayer.getLatLng(), 0, range, theta - threshold, theta + threshold, gisObjectlayer.color, true, false);
 
     let line = L.polyline([[lat, lng], [centerLatLng.lat, centerLatLng.lng]], {
       color: color,    // Border color

@@ -18,4 +18,8 @@ export class MoonSocketService extends BaseHttpClientService {
   takingPossession(serialNumber:string, lat:number,lng:number,order:string){
     return this.httpClient.post(this.apiUrl + "/takingPossession?serialNumber="+serialNumber+"&lat="+lat+"&lng="+lng+"&order="+order,{});
   }
+  //Call from JammerGonbadi
+  jammerGonbadiOnOff(chanelNumber:string,state:string){
+    return this.httpClient.post(this.apiUrl + "/jammerGonbadiOnOff?chanelNumber="+chanelNumber+"&state="+state,{});
+  }
 }
