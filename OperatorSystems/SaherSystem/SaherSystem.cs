@@ -2,16 +2,13 @@ using System;
 using Microsoft.AspNetCore.SignalR;
 using OperatorSystems;
 using Server.models;
-using WebSocketsSample.MoonSocket;
 
 namespace Server.DecisionService;
 
 public class SaherSystem : OperatorSystem
 {
-    private readonly IMoonContext _moonContext;
-    public SaherSystem(GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude,IMoonContext moonContext) : base(gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public SaherSystem(GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
-         _moonContext = moonContext;
     }
 
     public override void Execute(Target target)

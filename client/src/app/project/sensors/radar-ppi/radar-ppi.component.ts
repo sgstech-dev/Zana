@@ -33,7 +33,7 @@ export class RadarPPIComponent extends SensorCompenent {
         sortable: false,
         width: '100%',
         formatter: (rowData) => {
-          return rowData.latitude.toFixed(2);
+          return rowData.latitude.toFixed(4);
         },
       },
       {
@@ -42,7 +42,7 @@ export class RadarPPIComponent extends SensorCompenent {
         sortable: false,
         width: '100%',
         formatter: (rowData) => {
-          return rowData.longitude.toFixed(2);
+          return rowData.longitude.toFixed(4);
         },
       },
       {

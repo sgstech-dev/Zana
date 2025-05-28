@@ -7,7 +7,7 @@ namespace SaherSystem;
 public class SaherSensor : SensorSystem
 {
     private bool isListenning = false;
-    public SaherSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port) : base(hubContext, sensorObject, IpAddress, Port)
+    public SaherSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange) : base(hubContext, sensorObject, IpAddress, Port , maxrange)
     {
     }
 

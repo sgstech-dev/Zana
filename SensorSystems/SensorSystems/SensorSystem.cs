@@ -13,21 +13,32 @@ public enum ConnectionType { TcpListener, UdpListener, TcpClient, UdpClient, Htt
 public abstract class SensorSystem
 {
     public event TargetDetected? OnTargetDetected;
-    private ConcurrentDictionary<string, Guid> TargetIds = [];
-    private IHubContext<Hub> m_hubContext;
+    //protected ConcurrentDictionary<string, Guid> TargetIds = [];
+    protected IHubContext<Hub> m_hubContext;
     protected GisObject m_sensorObject;
     protected string m_ipAddress;
     protected int m_port;
     protected bool m_enableRelay;
+    protected bool m_isRunSimulation = false;
     protected RelayConnection? relayConnection;
-    public SensorSystem(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port)
+    protected double m_maxrange;
+    public SensorSystem(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange)
     {
         m_hubContext = hubContext;
         m_sensorObject = sensorObject;
         m_ipAddress = IpAddress;
         m_port = Port;
+        m_maxrange = maxrange;
     }
     public abstract Task Listen();
+    public virtual Task StartSimulation(List<List<Scene>> tergets_States)
+    {
+        m_isRunSimulation = true;
+        return Task.CompletedTask;
+    }
+    public void StopSimulation() {
+        m_isRunSimulation = false;   
+    }
     public virtual void PushData(Target target, string ipAddress)
     {
         Console.WriteLine(target);
@@ -39,13 +50,14 @@ public abstract class SensorSystem
     }
     protected Task sendToClient(Target target)
     {
+        if (target == null)
+            Console.WriteLine("Send Null Target!!!!!!!!!!!");
         target.Detector_id = m_sensorObject.Id;
         target.Detector = m_sensorObject;
         if (OnTargetDetected != null)
         {
             OnTargetDetected(this, target);
         }
-        //return Task.CompletedTask;
         return m_hubContext.Clients.All.SendAsync("sendTarget", target);
     }
     protected virtual void Relay(String jasonData) { 

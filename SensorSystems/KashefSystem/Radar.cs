@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SensorSystems;
 using Server.models;
+using Server.Tools;
 
 namespace KashefSystem;
 
 public class Radar : SensorSystem
 {
     private ConcurrentDictionary<string, Guid> TargetIds = [];
-    public Radar(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port) : base(hubContext, sensorObject, IpAddress, Port)
+    public Radar(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange) : base(hubContext, sensorObject, IpAddress, Port,maxrange)
     {
     }
 
@@ -51,6 +52,7 @@ public class Radar : SensorSystem
                                 Simulated = false,
                                 SystemTargetId = 0,//radarTarget!["TargetId"].ToString(),
                                 TargetId = TargetIds[radarTarget!["TargetID"].ToString()!].ToString(),
+                                DetectedTime = DateTime.Now
                             };
                             await sendToClient(target);
                         }
@@ -66,6 +68,57 @@ public class Radar : SensorSystem
         {
             Console.WriteLine("An error was occurred! : " + error.Message);
         }
+        return Task.CompletedTask;
+    }
+
+    public override Task StartSimulation(List<List<Scene>> targets_States)
+    {
+        base.StartSimulation(targets_States);
+        foreach (var target_states in targets_States)
+        {
+            Task.Run(async () =>
+            {
+                double time = 0;// in second
+                Guid TargetId = Guid.NewGuid();
+                (bool isFinished, Scene? targetState) result;
+                do
+                {
+                    result = GisUtil.Interpolate(target_states, time);
+                    var dist = GisUtil.CalculateDistance(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
+                    //if (dist > m_maxrange)
+                   //     continue;
+                    try
+                        {
+                            Target simulatedtarget = new Target
+                            {
+                                Altitude = result.targetState!.Altitude,
+                                Heading = result.targetState!.Heading,
+                                Latitude = result.targetState!.Latitude,
+                                Longitude = result.targetState!.Longitude,
+                                Speed = result.targetState!.Speed,
+                                TargetType = TargetType.Position,
+                                Simulated = true,
+                                SystemTargetId = result.targetState!.GisObjectId,
+                                TargetId = TargetId.ToString(),
+                                DetectedTime = DateTime.Now
+                            };
+                            await sendToClient(simulatedtarget);
+                            time++; ///in second
+                            await Task.Delay(3000);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            result.targetState!.Dispose();
+                        }
+                }
+                while (!result.isFinished && m_isRunSimulation);
+            });
+        }
+        Console.WriteLine("Start simulation.");
         return Task.CompletedTask;
     }
 }

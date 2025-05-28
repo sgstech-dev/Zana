@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../SensorSystems/SensorSystems.csproj" />
+    <ProjectReference Include="../../Tools/Tools.csproj" />
   </ItemGroup>
 
 </Project>

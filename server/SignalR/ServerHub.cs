@@ -103,7 +103,9 @@ namespace Server
                 }
             }
             catch (Exception ex)
-            { }
+            {
+                Console.WriteLine(ex.Message);
+            }
             finally
             {
                 udpClient.Close();

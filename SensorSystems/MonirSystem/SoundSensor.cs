@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SensorSystems;
 using Server.models;
+using Server.Tools;
 
 namespace MonirSystem;
 
 public class SoundSensor : SensorSystem
 {
-    public SoundSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port) : base(hubContext, sensorObject, IpAddress, Port)
+    public SoundSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange) : base(hubContext, sensorObject, IpAddress, Port, maxrange)
     {
 
     }
@@ -19,7 +20,7 @@ public class SoundSensor : SensorSystem
     public override Task Listen()
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add($"http://+:{m_port}/" );
+        listener.Prefixes.Add($"http://+:{m_port}/");
         listener.Start();
         return Task.Run(async () =>
         {
@@ -38,7 +39,7 @@ public class SoundSensor : SensorSystem
                         string body = await reader.ReadToEndAsync();
                         Console.WriteLine("POST Body: " + body);
                         var radarTarget = JsonConvert.DeserializeObject<Dictionary<string, Object>>(body)!;
-                       // if (radarTarget.ContainsKey("radarTarget"))
+                        // if (radarTarget.ContainsKey("radarTarget"))
                         {
                             if (radarTarget != null)
                             {
@@ -81,6 +82,57 @@ public class SoundSensor : SensorSystem
                 }
             }
         });
+    }
+    public override Task StartSimulation(List<List<Scene>> targets_States)
+    {
+        base.StartSimulation(targets_States);
+        foreach (var target_states in targets_States)
+        {
+            Task.Run(async () =>
+            {
+                double time = 0;// in second
+                Guid TargetId = Guid.NewGuid();
+                (bool isFinished, Scene? targetState) result;
+                do
+                {
+                    result = GisUtil.Interpolate(target_states, time);
+                    var dist = GisUtil.CalculateDistance(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
+                    var theta = GisUtil.bearing(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
+                   // if (dist > m_maxrange)
+                   //     continue;
+                    try
+                    {
+                        Target simulatedtarget = new Target
+                        {
+                            Theta = theta,
+                            Elevation = 0,
+                            DetectedTime = DateTime.Now,
+                            TargetType = TargetType.Direction,
+                            Simulated = true,
+                            SystemTargetId = 0,
+                            TargetId = Guid.Empty.ToString(),
+                            Detector_id = m_sensorObject.Id,
+                            Detector = m_sensorObject
+                        };
+                        await sendToClient(simulatedtarget);
+                        time++; ///in second
+                        Task.Delay(3000).Wait();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    finally
+                    {
+                        result.targetState!.Dispose();
+                    }
+                }
+                while (!result.isFinished && m_isRunSimulation);
+            });
+
+        }
+        Console.WriteLine("Start simulation.");
+        return Task.CompletedTask;
     }
     protected override void Relay(string jasonData)
     {

@@ -30,8 +30,8 @@ export abstract class SensorCompenent implements AfterViewInit {
         this.center = L.latLng(this.centerLat, this.centerLng);
         this.initializeMap();
         this.ppiUtilityService.drawPPIAxis(this.map, this.center, this.radius);
-        this.ppiUtilityService.drawFadingCircle(this.map, 32, 54.1);
-        this.ppiUtilityService.drawFadingCircle(this.map, 30.5, 57.8);
+        // this.ppiUtilityService.drawFadingCircle(this.map, 32, 54.1);
+        // this.ppiUtilityService.drawFadingCircle(this.map, 30.5, 57.8);
         this.setColumns();
     }
 

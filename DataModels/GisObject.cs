@@ -20,5 +20,9 @@ namespace Server.models
         public int ObjectType_id { get; set; }
         [ForeignKey("ObjectType_id")]
         public ObjectType? ObjectType { get; set; }
+        [NotMapped]
+        public double LastLatitude { get; set; }
+        [NotMapped]
+        public double LastLongitude { get; set; }
     }
 }

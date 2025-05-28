@@ -19,7 +19,7 @@ namespace OperatorSystems
         protected double m_latitude;
         protected double m_longitude;
         protected double m_atitude;
-        protected Dictionary<string, Target> m_targetMap;
+        protected Dictionary<string, Target> m_targetMap ;
         public Dictionary<string, Target> Targets { get { return m_targetMap; } }
         public OperatorSystem(
             GisObject gisObject,
@@ -32,7 +32,7 @@ namespace OperatorSystems
             double altitude)
         {
             m_gisObject = gisObject;
-            m_targetMap = new Dictionary<string, Target>();
+            m_targetMap = [];
             m_startRange = startRange;
             m_endRange = endRange;
             m_startAngle = startAngle;
@@ -49,7 +49,8 @@ namespace OperatorSystems
         {
             if (checkTargetInZones(target))
             {
-                m_targetMap[target.TargetId] = target;
+                if ((target != null) && (target.TargetId != null))
+                    m_targetMap[target.TargetId] = target;
             }
             else
             {
@@ -70,7 +71,8 @@ namespace OperatorSystems
             var bearing = GisUtil.bearing(m_latitude, m_longitude, target.Latitude, target.Longitude);
             return (dist > m_startRange && dist < m_endRange && bearing > m_startAngle && bearing < m_endAngle);
         }
-        public virtual void CallCommand(string command,params object[] args){
+        public virtual void CallCommand(string command, params object[] args)
+        {
             return;
         }
     }

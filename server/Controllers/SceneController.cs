@@ -54,24 +54,6 @@ namespace Server.controllers
             return scene;
         }
 
-        // GET: api/Scene/5
-        [HttpGet]
-        [Route("GetLastScene")]
-        public ActionResult<IEnumerable<Scene>> GetLastScene()
-        {
-            //var scene = 
-            if (ScenarioService.lastTargetScene == null)
-            {
-                return NotFound();
-            }
-            List<Scene> scenes = [];
-            foreach (var item in ScenarioService.lastTargetScene)
-            {
-                scenes.Add(item.Value);
-            }
-            return scenes;
-        }
-
         // PUT: api/Scene/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

@@ -125,8 +125,8 @@ public class DecisionBuilder
             var OSTargets = item.Value.Targets;
             if (OSTargets.Count() > 0)
             {
-                item.Value.Execute(OSTargets.FirstOrDefault().Value);
-                item.Value.SendReportToClients(OSTargets.FirstOrDefault().Value, _hubContext);
+                item.Value.Execute(OSTargets.Where(t=>t.Value != null).FirstOrDefault().Value);
+                item.Value.SendReportToClients(OSTargets.Where(t=>t.Value != null).FirstOrDefault().Value, _hubContext);
             }
         }
     }

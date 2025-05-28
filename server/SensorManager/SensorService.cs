@@ -18,7 +18,7 @@ public class SensorService
     private double lastDetectedTimeInSecond;
     private DateTime lastDetectedTime;
     private bool warningSituation = false;
-
+    private double MaxRange;
     public SensorService(WGDBContextFactory wGDBContextFactory, IHubContext<ServerHub> hubContext, IConfiguration configuration, DecisionBuilder decisionBuilder)
     {
         SensorSystems = [];
@@ -72,7 +72,10 @@ public class SensorService
             bool HasRelay = false;
             string RelayRemoteServerIpAddres = "";
             int RelayRemoteServerPort = 0;
-            ConnectionType relayConnectionType = ConnectionType.TcpClient; ;
+            ConnectionType relayConnectionType = ConnectionType.TcpClient;
+            var gisScene = db.Scene.Where(s => s.GisObjectId == gisObject.Id).FirstOrDefault();
+            gisObject.LastLatitude = gisScene!.Latitude;
+            gisObject.LastLongitude = gisScene!.Longitude;
 
             var metadatas = await db.GisObjectMetaDatas.Include("Field").Where(gom => gom.Object_id == gisObject.Id).ToListAsync();
             foreach (var metadata in metadatas)
@@ -101,6 +104,10 @@ public class SensorService
                 {
                     RelayRemoteServerPort = int.Parse(metadata.Value);
                 }
+                if (metadata.Field!.Name == "MaxRange")
+                {
+                    MaxRange = double.Parse(metadata.Value);
+                }
                 if (metadata.Field!.Name == "RelayType")
                 {
                     switch (metadata.Value)
@@ -117,7 +124,7 @@ public class SensorService
             }
             if (IsSensor && !SensorSystems.ContainsKey(gisObject.Id))
             {
-                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject, IpAddress, port);
+                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject, IpAddress, port,MaxRange);
                 if (sensorSystem != null)
                 {
                     SensorSystems[gisObject.Id] = sensorSystem;
@@ -130,12 +137,30 @@ public class SensorService
         }
     }
 
+    public void StartSimulation(List<List<Scene>> targets_states)
+    {
+        foreach (var item in SensorSystems)
+        {
+            item.Value.StartSimulation(targets_states);
+        }
+    }
+
+    public void StopSimulation()
+    {
+        foreach (var item in SensorSystems)
+        {
+            item.Value.StopSimulation();
+        }
+    }
+
     private void SensorSystems_OnTargetDetected(object sender, Target target)
     {
         lastDetectedTime = DateTime.Now;
-
-        _decisionBuilder.UpdateState(target);
-        _decisionBuilder.MakeDecision();
+        if (target != null)
+        {
+            _decisionBuilder.UpdateState(target);
+            _decisionBuilder.MakeDecision();
+        }
     }
 
     private void checkWarningSituation()
