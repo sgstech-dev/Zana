@@ -17,6 +17,10 @@ export class SignalRService {
         .withAutomaticReconnect()
         .build();
     }
+    SignalRService.connection.onclose(error => {
+      console.error("Connection closed", error);
+      // Optional: try to reconnect manually or inform the user
+    });
     //return SignalRService.connection.start();
     if (this.connection.state === HubConnectionState.Connected) {
       // Connection is already established
@@ -28,11 +32,11 @@ export class SignalRService {
         console.log('Connection started successfully');
       })
       .catch(err => {
-       // console.error('Error while starting connection: ', err);
+        // console.error('Error while starting connection: ', err);
       });
   }
 
-  public static getConnection():signalR.HubConnection{
+  public static getConnection(): signalR.HubConnection {
     return this.connection;
   }
 }

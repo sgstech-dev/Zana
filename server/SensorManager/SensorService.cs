@@ -158,8 +158,7 @@ public class SensorService
         lastDetectedTime = DateTime.Now;
         if (target != null)
         {
-            _decisionBuilder.UpdateState(target);
-            _decisionBuilder.MakeDecision();
+            _decisionBuilder.MakeDecision(target);
         }
     }
 

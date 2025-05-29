@@ -1,18 +1,18 @@
 import { UUID } from 'crypto';
 import { Target, TargetType } from "../services/target-service.service";
-import { AfterViewInit, inject, Injectable, Input, NgZone, numberAttribute } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, inject, Injectable, Input, NgZone, numberAttribute, OnInit } from "@angular/core";
 import * as L from 'leaflet';
 import { PpiUtilityService } from "../services/ppi-utility.service";
 import { MtxGridColumn } from "@ng-matero/extensions/grid";
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export abstract class SensorCompenent implements AfterViewInit {
+export abstract class SensorCompenent implements AfterViewInit,OnInit {
     private center: L.LatLng;
     private map: L.Map;
     private readonly ppiUtilityService = inject(PpiUtilityService);
     private readonly ngZone = inject(NgZone);
-
+    public readonly cdr = inject(ChangeDetectorRef);
     public isLoading: boolean = false;
     public targetList: Target[] = [];
     public columns: MtxGridColumn[] = [];
@@ -25,6 +25,9 @@ export abstract class SensorCompenent implements AfterViewInit {
 
     constructor(
     ) { }
+    ngOnInit(): void {
+        this.setColumns();
+    }
 
     ngAfterViewInit(): void {
         this.center = L.latLng(this.centerLat, this.centerLng);
@@ -32,7 +35,7 @@ export abstract class SensorCompenent implements AfterViewInit {
         this.ppiUtilityService.drawPPIAxis(this.map, this.center, this.radius);
         // this.ppiUtilityService.drawFadingCircle(this.map, 32, 54.1);
         // this.ppiUtilityService.drawFadingCircle(this.map, 30.5, 57.8);
-        this.setColumns();
+        
     }
 
     protected initializeMap() {
@@ -76,6 +79,7 @@ export abstract class SensorCompenent implements AfterViewInit {
                 this.targetList.pop();
             this.targetList = [...this.targetList];
         });
+        this.cdr.detectChanges();
     }
 
     abstract setColumns(): void;

@@ -36,10 +36,7 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
     this.initSignalR();
   }
   ngOnInit(): void {
-    SignalRService.getConnection().invoke("saherStatusRequest");
-    setInterval(() => {
-      SignalRService.getConnection().invoke("saherStatusRequest");
-    }, 3000);
+
   }
 
   initSignalR(): void {
@@ -49,13 +46,17 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
           this.motor = motor;
         });
       });
+      SignalRService.getConnection().invoke("saherStatusRequest");
+      setInterval(() => {
+        SignalRService.getConnection().invoke("saherStatusRequest");
+      }, 3000);
     });
   }
 
   motorTogle() {
     this.motor = !this.motor;
     console.log("Motor:", this.motor);
-    SignalRService.getConnection().invoke("saher_TurnOn_Off","motor");
+    SignalRService.getConnection().invoke("saher_TurnOn_Off", "motor");
   }
 
   setColumns(): void {

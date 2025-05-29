@@ -26,10 +26,6 @@ import {
   _getOptionScrollPosition
 } from "./chunk-HBP6OA6Q.js";
 import {
-  CdkScrollableModule,
-  ViewportRuler
-} from "./chunk-2NPGNF2M.js";
-import {
   animate,
   group,
   state,
@@ -37,6 +33,10 @@ import {
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import {
+  CdkScrollableModule,
+  ViewportRuler
+} from "./chunk-2NPGNF2M.js";
 import {
   ActiveDescendantKeyManager,
   DOWN_ARROW,
@@ -118,12 +118,12 @@ import {
   ɵɵtemplate,
   ɵɵviewQuery
 } from "./chunk-57TCTXNO.js";
+import "./chunk-IXUSS67I.js";
 import {
   defer,
   fromEvent,
   merge
 } from "./chunk-O6VDDHVS.js";
-import "./chunk-IXUSS67I.js";
 import {
   Observable,
   Subject,

@@ -12,14 +12,14 @@ public class DefaultSystem : OperatorSystem
 {
     IPEndPoint endPoint;
     protected UdpClient udpClient;
-    public DefaultSystem(GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public DefaultSystem(IHubContext<Hub> hubContext,GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(hubContext,gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
         udpClient = new UdpClient();
         udpClient.EnableBroadcast = true; // فعال‌سازی برادکست
         endPoint = new IPEndPoint(IPAddress.Broadcast, 61000);
     }
 
-    public override void Execute(Target target)
+    protected override void Execute(Target target)
     {
         string jsonStr = "{\"Range\":" + target.Range + ",\"Theta\":" + target.Theta + "\"TargetId\":" + target.TargetId + "}";
         byte[] data = Encoding.UTF8.GetBytes(jsonStr);
@@ -29,10 +29,10 @@ public class DefaultSystem : OperatorSystem
         Console.WriteLine("From Dynamic DLL");
     }
 
-    public override void SendReportToClients(Target target, IHubContext<Hub> hubContext)
+    public override void SendReportToClients(Target target)
     {
         Console.WriteLine("Target <" + target.TargetId + "> reported to GUI ");
-        hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject);
+        _hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject).Wait();
         Console.WriteLine("From Dynamic DLL");
     }
 

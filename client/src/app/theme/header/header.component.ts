@@ -17,6 +17,11 @@ import { SignalRService } from 'app/project/services/signal-r.service';
 import { HubConnectionState } from '@microsoft/signalr';
 import { AuthService } from '@core/authentication/auth.service';
 import { User } from '@core/authentication/interface';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { AssignedTargetsService } from '@shared/services/assignedTargets';
+import { Target } from 'app/project/services/target-service.service';
+import { GisObject } from 'app/project/services/gis-object.service';
 
 @Component({
   selector: 'app-header',
@@ -58,7 +63,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
 
   constructor(
     private scenarioService: ScenarioService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private router: Router,
+    private assignedTargetsService: AssignedTargetsService
   ) {
     this.warningSituationAlarmAudio.src = "/audio/r.mp3";
     this.warningSituationAlarmAudio.load();
@@ -74,6 +81,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
   ngOnInit(): void {
     this.loadScenariosData();
     this.initSignalR();
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd)
+      )
+      .subscribe((event: NavigationEnd) => {
+        console.log('Route changed to:', event.urlAfterRedirects);
+        this.changeScenario();  // تابعی که می‌خوای صدا بزنی
+      });
     //  this.authService.user().subscribe(user => (this.user = user));
   }
 
@@ -88,7 +103,26 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
             this.normalSituationAlarmAudio.play();
         });
       });
+      SignalRService.getConnection().on("assignTarget", (target: Target, gisObject: GisObject) => {
+        this.ngZone.run(() => {
+          if (!this.ObjectsAssinedContain(gisObject.id)) {
+            this.assignedTargetsService.addAssignTarget({ target: target, gisObject: gisObject });
+          }
+        });
+      });
+      
     });
+  }
+
+  ObjectsAssinedContain(id: number) {
+    let result: Boolean = false;
+    this.assignedTargetsService.getCurrentAssignedTargets().forEach(element => {
+      if (element.gisObject.id === id) {
+        result = true;
+        return true;
+      }
+    });
+    return result;
   }
 
   toggleFullscreen() {
@@ -118,17 +152,23 @@ export class HeaderComponent implements OnInit, AfterViewInit, AfterContentInit 
 
   changeScenario() {
     this.scenarioService.changeScenario(Number(this.currentScenario_id));
-    SignalRService.getConnection().invoke('changeScenario', Number(this.currentScenario_id));
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().invoke('changeScenario', Number(this.currentScenario_id));
+    });
   }
 
   startScenario() {
-    SignalRService.getConnection().invoke('start', Number(this.currentScenario_id));
-    this.isPlayed.set(Number(this.currentScenario_id), !this.isPlayed.get(Number(this.currentScenario_id)));
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().invoke('start', Number(this.currentScenario_id));
+      this.isPlayed.set(Number(this.currentScenario_id), !this.isPlayed.get(Number(this.currentScenario_id)));
+    });
   }
 
   stopScenario() {
-    SignalRService.getConnection().invoke('stop', Number(this.currentScenario_id));
-    this.isPlayed.set(Number(this.currentScenario_id), !this.isPlayed.get(Number(this.currentScenario_id)));
+    SignalRService.startConnection().then(() => {
+      SignalRService.getConnection().invoke('stop', Number(this.currentScenario_id));
+      this.isPlayed.set(Number(this.currentScenario_id), !this.isPlayed.get(Number(this.currentScenario_id)));
+    });
   }
 
   getState() {

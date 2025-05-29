@@ -23,7 +23,7 @@ public class Radar : SensorSystem
         {
             UdpClient udpListener = new UdpClient(51233);
             var isRun = true;
-            _ = Task.Run(async () =>
+            _ = Task.Run(() =>
             {
                 while (isRun)
                 {
@@ -54,7 +54,7 @@ public class Radar : SensorSystem
                                 TargetId = TargetIds[radarTarget!["TargetID"].ToString()!].ToString(),
                                 DetectedTime = DateTime.Now
                             };
-                            await sendToClient(target);
+                            sendToClient(target).Wait();
                         }
                     }
                     catch (Exception ex)
@@ -62,6 +62,8 @@ public class Radar : SensorSystem
                         Console.WriteLine("Error: " + ex.Message);
                     }
                 }
+
+                return Task.CompletedTask;
             });
         }
         catch (Exception error)

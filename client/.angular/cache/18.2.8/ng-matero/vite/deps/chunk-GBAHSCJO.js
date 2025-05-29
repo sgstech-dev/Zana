@@ -13,15 +13,15 @@ import {
   MatRippleModule
 } from "./chunk-HBP6OA6Q.js";
 import {
-  CdkScrollableModule
-} from "./chunk-2NPGNF2M.js";
-import {
   animate,
   state,
   style,
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import {
+  CdkScrollableModule
+} from "./chunk-2NPGNF2M.js";
 import {
   DOWN_ARROW,
   ENTER,
@@ -1532,4 +1532,4 @@ export {
   MatMenuTrigger,
   MatMenuModule
 };
-//# sourceMappingURL=chunk-FNYXYVJN.js.map
+//# sourceMappingURL=chunk-GBAHSCJO.js.map

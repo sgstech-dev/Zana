@@ -36,31 +36,40 @@ public abstract class SensorSystem
         m_isRunSimulation = true;
         return Task.CompletedTask;
     }
-    public void StopSimulation() {
-        m_isRunSimulation = false;   
+    public void StopSimulation()
+    {
+        m_isRunSimulation = false;
     }
     public virtual void PushData(Target target, string ipAddress)
     {
         Console.WriteLine(target);
     }
-    public void EnableRelay(string relayServerIpAddress, int relayServerPort, ConnectionType connectionType){
+    public void EnableRelay(string relayServerIpAddress, int relayServerPort, ConnectionType connectionType)
+    {
         m_enableRelay = true;
         var relayConnectionFactory = new RelayConnectionFactory(relayServerIpAddress, relayServerPort);
         relayConnection = relayConnectionFactory.GetConnection(connectionType);
     }
     protected Task sendToClient(Target target)
     {
-        if (target == null)
-            Console.WriteLine("Send Null Target!!!!!!!!!!!");
-        target.Detector_id = m_sensorObject.Id;
-        target.Detector = m_sensorObject;
-        if (OnTargetDetected != null)
+        try
         {
-            OnTargetDetected(this, target);
+            target.Detector_id = m_sensorObject.Id;
+            target.Detector = m_sensorObject;
+            if (OnTargetDetected != null)
+            {
+                OnTargetDetected(this, target);
+            }
+            return m_hubContext.Clients.All.SendAsync("sendTarget", target);
         }
-        return m_hubContext.Clients.All.SendAsync("sendTarget", target);
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+        return Task.CompletedTask;
     }
-    protected virtual void Relay(String jasonData) { 
+    protected virtual void Relay(String jasonData)
+    {
         if (m_enableRelay)
         {
             relayConnection!.Send(jasonData).Wait();

@@ -10,20 +10,20 @@ namespace Server.DecisionService;
 
 public class JamerGombadiSystem : OperatorSystem
 {
-    public JamerGombadiSystem(GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public JamerGombadiSystem(IHubContext<Hub> hubContext,GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(hubContext,gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
 
     }
 
-    public override void Execute(Target target)
+    protected override void Execute(Target target)
     {
         Console.WriteLine("Target <" + target.TargetId + "> assign to oparator " + m_gisObject.Name);
     }
 
-    public override void SendReportToClients(Target target, IHubContext<Hub> hubContext)
+    public override void SendReportToClients(Target target)
     {
         Console.WriteLine("Target <" + target.TargetId + "> reported to GUI ");
-        hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject);
+        _hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject).Wait();
         Console.WriteLine("From Dynamic DLL");
     }
 

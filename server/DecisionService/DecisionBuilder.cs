@@ -64,19 +64,11 @@ public class DecisionBuilder
                 }
             }
             OperatorSystem? operatorSystem;
-            if (startAngle != null && endAngle != null && startRange != null && endRange != null && IsOperator)
+            if (!OperatorSystems.ContainsKey(gisObject.Id))
             {
-                operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", gisObject,
-                    startRange.Value,
-                    endRange.Value,
-                    startAngle.Value,
-                    endAngle.Value,
-                    gisObjectState!.Latitude,
-                    gisObjectState!.Longitude,
-                    gisObjectState!.Altitude);
-                if (operatorSystem == null)
+                if (startAngle != null && endAngle != null && startRange != null && endRange != null && IsOperator)
                 {
-                    operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/DefaultSystem.dll", gisObject,
+                    operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject,
                         startRange.Value,
                         endRange.Value,
                         startAngle.Value,
@@ -84,9 +76,20 @@ public class DecisionBuilder
                         gisObjectState!.Latitude,
                         gisObjectState!.Longitude,
                         gisObjectState!.Altitude);
+                    if (operatorSystem == null)
+                    {
+                        operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/DefaultSystem.dll", _hubContext, gisObject,
+                            startRange.Value,
+                            endRange.Value,
+                            startAngle.Value,
+                            endAngle.Value,
+                            gisObjectState!.Latitude,
+                            gisObjectState!.Longitude,
+                            gisObjectState!.Altitude);
+                    }
+                    if (operatorSystem != null)
+                        OperatorSystems[gisObject.Id] = operatorSystem;
                 }
-                if (operatorSystem != null)
-                    OperatorSystems[gisObject.Id] = operatorSystem;
             }
         }
     }
@@ -118,24 +121,11 @@ public class DecisionBuilder
         }
     }
 
-    public void MakeDecision()
+    public void MakeDecision(Target target)
     {
         foreach (var item in OperatorSystems)
         {
-            var OSTargets = item.Value.Targets;
-            if (OSTargets.Count() > 0)
-            {
-                item.Value.Execute(OSTargets.Where(t=>t.Value != null).FirstOrDefault().Value);
-                item.Value.SendReportToClients(OSTargets.Where(t=>t.Value != null).FirstOrDefault().Value, _hubContext);
-            }
-        }
-    }
-    
-    public void UpdateState(Target target)
-    {
-        foreach (var item in OperatorSystems)
-        {
-            item.Value.AddTarget(target);
+            item.Value.MakeDecision(target);
         }
     }
 }

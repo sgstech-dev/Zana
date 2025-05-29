@@ -59,7 +59,7 @@ export class GisObjectTableComponent implements OnInit, AfterViewInit, OnDestroy
             if (element.id === gisObject.id) {
               element.status = 'assignTarget';
               this.gisObjectsStatus.set(gisObject.id, "assignTarget");
-              this.updateTable(this.scenario_id);
+              this.list = [...this.list];
               return true;
             }
           });

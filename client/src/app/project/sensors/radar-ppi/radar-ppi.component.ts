@@ -63,7 +63,8 @@ export class RadarPPIComponent extends SensorCompenent {
           return this.dateTimeUtilityService.formatDate(rowData.detectedTime, 'yyyy-MM-dd HH:mm:ss');
         }
       }
-    ]
+    ];
+    this.cdr.detectChanges();
   }
   
 }

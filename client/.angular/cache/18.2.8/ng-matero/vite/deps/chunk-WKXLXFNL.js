@@ -18,9 +18,6 @@ import {
   MatCommonModule
 } from "./chunk-HBP6OA6Q.js";
 import {
-  CdkScrollable
-} from "./chunk-2NPGNF2M.js";
-import {
   animate,
   animateChild,
   group,
@@ -30,6 +27,9 @@ import {
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import {
+  CdkScrollable
+} from "./chunk-2NPGNF2M.js";
 import {
   ESCAPE,
   FocusMonitor,
@@ -1066,4 +1066,4 @@ export {
   _defaultParams,
   matDialogAnimations
 };
-//# sourceMappingURL=chunk-O5Q5JT22.js.map
+//# sourceMappingURL=chunk-WKXLXFNL.js.map

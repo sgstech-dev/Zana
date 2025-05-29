@@ -98,7 +98,7 @@ export default class MapComponent implements AfterViewInit, OnInit, OnDestroy {
             aircraftMarker.setRotationAngle(target.heading);
           }
         });
-        this.aircraftTable.updateTable(this.currentScenario_id);
+       // this.aircraftTable.updateTable(this.currentScenario_id);
         //  console.log(targetState);
       });
       SignalRService.getConnection().on("targetInZone", (targetObjectId: number, gisObjectId: number) => {

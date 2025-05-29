@@ -9,16 +9,16 @@ import {
   MatCommonModule
 } from "./chunk-HBP6OA6Q.js";
 import {
-  CdkScrollableModule,
-  ScrollDispatcher
-} from "./chunk-2NPGNF2M.js";
-import {
   animate,
   state,
   style,
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import {
+  CdkScrollableModule,
+  ScrollDispatcher
+} from "./chunk-2NPGNF2M.js";
 import {
   A11yModule,
   AriaDescriber,
@@ -1082,4 +1082,4 @@ export {
   matTooltipAnimations,
   MatTooltipModule
 };
-//# sourceMappingURL=chunk-M5PEYSAI.js.map
+//# sourceMappingURL=chunk-GY4JJGM6.js.map

@@ -114,7 +114,7 @@ public class SoundSensor : SensorSystem
                             Detector_id = m_sensorObject.Id,
                             Detector = m_sensorObject
                         };
-                        await sendToClient(simulatedtarget);
+                        sendToClient(simulatedtarget).Wait();
                         time++; ///in second
                         Task.Delay(3000).Wait();
                     }

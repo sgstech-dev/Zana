@@ -28,10 +28,6 @@ import {
   _getOptionScrollPosition
 } from "./chunk-HBP6OA6Q.js";
 import {
-  CdkScrollableModule,
-  ViewportRuler
-} from "./chunk-2NPGNF2M.js";
-import {
   animate,
   animateChild,
   query,
@@ -40,6 +36,10 @@ import {
   transition,
   trigger
 } from "./chunk-IPQJSEC4.js";
+import {
+  CdkScrollableModule,
+  ViewportRuler
+} from "./chunk-2NPGNF2M.js";
 import {
   A,
   ActiveDescendantKeyManager,
@@ -1519,4 +1519,4 @@ export {
   MatSelectTrigger,
   MatSelectModule
 };
-//# sourceMappingURL=chunk-JVVMQV72.js.map
+//# sourceMappingURL=chunk-LIP3QQ54.js.map

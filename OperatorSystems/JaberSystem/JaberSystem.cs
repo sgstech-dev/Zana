@@ -9,12 +9,12 @@ namespace Server.DecisionService;
 public class JaberSystem : OperatorSystem
 {
     // private readonly IMoonContext _moonContext;
-    public JaberSystem(GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude/*,IMoonContext moonContext*/) : base(gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public JaberSystem(IHubContext<Hub> hubContext,GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude/*,IMoonContext moonContext*/) : base(hubContext,gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
         // _moonContext = moonContext;
     }
 
-    public override void Execute(Target target)
+    protected override void Execute(Target target)
     {
         // List<Parameter> parameters = new List<Parameter>();
         // parameters.Add(new Parameter { ParamName = "Range", Value = target.Range });
@@ -24,12 +24,12 @@ public class JaberSystem : OperatorSystem
         Console.WriteLine("Target <" + target.TargetId + "> assign to oparator " + m_gisObject.Name);
     }
 
-    public override void SendReportToClients(Target target, IHubContext<Hub> hubContext)
+    public override void SendReportToClients(Target target)
     {
         if (target.EnableHunted)
         {
             Console.WriteLine("Target <" + target.TargetId + "> reported to GUI ");
-            hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject);
+            _hubContext.Clients.All.SendAsync("assignTarget", target, m_gisObject).Wait();
         }
     }
 

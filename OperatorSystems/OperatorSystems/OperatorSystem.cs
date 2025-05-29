@@ -19,9 +19,11 @@ namespace OperatorSystems
         protected double m_latitude;
         protected double m_longitude;
         protected double m_atitude;
-        protected Dictionary<string, Target> m_targetMap ;
+        protected Dictionary<string, Target> m_targetMap;
+        protected IHubContext<Hub> _hubContext;
         public Dictionary<string, Target> Targets { get { return m_targetMap; } }
         public OperatorSystem(
+            IHubContext<Hub> hubContext,
             GisObject gisObject,
             int startRange,
             int endRange,
@@ -40,15 +42,20 @@ namespace OperatorSystems
             m_latitude = latitude;
             m_longitude = longitude;
             m_atitude = altitude;
-
+            _hubContext =  hubContext;
         }
-        public abstract void Execute(Target target);
+        protected abstract void Execute(Target target);
         public abstract void StopExecution(Target target);
-        public abstract void SendReportToClients(Target target, IHubContext<Hub> hubContext);
-        public void AddTarget(Target target)
+        public abstract void SendReportToClients(Target target);
+        public void MakeDecision(Target target)
         {
             if (checkTargetInZones(target))
             {
+                if (!m_targetMap.ContainsKey(target.TargetId))
+                {
+                    Execute(target);// شرایط عمل کردن و اینکه این سامانه در حالت لاک بماند تا عملش تموم بشه و اولویت اهداف تخصیص داده شده برای عمل باید پیاده سازی بشه
+                    SendReportToClients(target);
+                }
                 if ((target != null) && (target.TargetId != null))
                     m_targetMap[target.TargetId] = target;
             }
