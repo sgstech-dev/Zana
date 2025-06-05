@@ -88,7 +88,7 @@ public class SoundSensor : SensorSystem
         base.StartSimulation(targets_States);
         foreach (var target_states in targets_States)
         {
-            Task.Run(async () =>
+            Task.Run( () =>
             {
                 double time = 0;// in second
                 Guid TargetId = Guid.NewGuid();

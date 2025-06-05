@@ -1,13 +1,15 @@
 import { UUID } from 'crypto';
 import { Target, TargetType } from "../services/target-service.service";
-import { AfterViewInit, ChangeDetectorRef, inject, Injectable, Input, NgZone, numberAttribute, OnInit } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, inject, Injectable, Input, NgZone, OnInit, QueryList, ViewChildren, ViewContainerRef } from "@angular/core";
 import * as L from 'leaflet';
 import { PpiUtilityService } from "../services/ppi-utility.service";
 import { MtxGridColumn } from "@ng-matero/extensions/grid";
 import { v4 as uuidv4 } from 'uuid';
+import { SignalRService } from '../services/signal-r.service';
+import { GisObject } from '../services/gis-object.service';
 
 @Injectable()
-export abstract class SensorCompenent implements AfterViewInit,OnInit {
+export abstract class SensorCompenent implements AfterViewInit, OnInit {
     private center: L.LatLng;
     private map: L.Map;
     private readonly ppiUtilityService = inject(PpiUtilityService);
@@ -22,20 +24,19 @@ export abstract class SensorCompenent implements AfterViewInit,OnInit {
     protected centerLng!: number;
     protected radius!: number;
     protected sensorName!: string;
+    protected sensorGisObject : GisObject;
 
     constructor(
+
     ) { }
     ngOnInit(): void {
         this.setColumns();
     }
 
-    ngAfterViewInit(): void {
+    async ngAfterViewInit() {
         this.center = L.latLng(this.centerLat, this.centerLng);
         this.initializeMap();
         this.ppiUtilityService.drawPPIAxis(this.map, this.center, this.radius);
-        // this.ppiUtilityService.drawFadingCircle(this.map, 32, 54.1);
-        // this.ppiUtilityService.drawFadingCircle(this.map, 30.5, 57.8);
-        
     }
 
     protected initializeMap() {
@@ -53,6 +54,14 @@ export abstract class SensorCompenent implements AfterViewInit,OnInit {
         });
     }
 
+    public init(sensorGisObject:GisObject , centerLat: number,centerLng: number,radius: number,sensorName: string)
+    {
+        this.centerLat = centerLat;
+        this.centerLng = centerLng;
+        this.radius = radius;
+        this.sensorName = sensorName;
+        this.sensorGisObject = sensorGisObject;
+    }
     public addBlip(lat: number, lng: number) {
         this.ppiUtilityService.drawFadingCircle(this.map, lat, lng);
     }
@@ -62,6 +71,8 @@ export abstract class SensorCompenent implements AfterViewInit,OnInit {
     }
 
     public updateTargetList(target: Target) {
+        if (target.detector_id != this.sensorGisObject.id)
+            return;
         let existsTargetIdx = -1;
         if (target.targetType == TargetType.Position) {
             this.addBlip(target.latitude, target.longitude);

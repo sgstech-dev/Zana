@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SensorSystems;
 using Server.DecisionService;
 using Server.models;
@@ -124,7 +125,7 @@ public class SensorService
             }
             if (IsSensor && !SensorSystems.ContainsKey(gisObject.Id))
             {
-                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject, IpAddress, port,MaxRange);
+                SensorSystem? sensorSystem = loadSystem(_configuration["Appsettings:SensorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject, IpAddress, port, MaxRange);
                 if (sensorSystem != null)
                 {
                     SensorSystems[gisObject.Id] = sensorSystem;
@@ -159,6 +160,25 @@ public class SensorService
         if (target != null)
         {
             _decisionBuilder.MakeDecision(target);
+            //just for test
+            AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
+        }
+    }
+
+    //just for test
+    private async Task AppendTargetToFile(Target target, string filePath)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+        using (StreamWriter writer = new StreamWriter(filePath, append: true))
+        {
+            target.Detector = null;
+            string json = JsonConvert.SerializeObject(target,settings);
+            await writer.WriteLineAsync(json);
+            await writer.FlushAsync(); // تضمین نوشته‌شدن
         }
     }
 

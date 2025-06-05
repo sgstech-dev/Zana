@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaherSystem", "OperatorSystems\SaherSystem\SaherSystem.csproj", "{3103E23F-45B4-40EE-F7EE-36FF28E0A4F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperatorSystems", "OperatorSystems\OperatorSystems\OperatorSystems.csproj", "{2F6FC78B-FDCA-41F1-699B-69A999197E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataForTest", "DataForTest\DataForTest.csproj", "{89899358-7218-497C-9548-D8C2BF60B229}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +98,10 @@ Global
 		{2F6FC78B-FDCA-41F1-699B-69A999197E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F6FC78B-FDCA-41F1-699B-69A999197E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F6FC78B-FDCA-41F1-699B-69A999197E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89899358-7218-497C-9548-D8C2BF60B229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89899358-7218-497C-9548-D8C2BF60B229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89899358-7218-497C-9548-D8C2BF60B229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89899358-7218-497C-9548-D8C2BF60B229}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

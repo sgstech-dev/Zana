@@ -1,4 +1,4 @@
-import { Component, inject, Input, numberAttribute } from '@angular/core';
+import { AfterViewInit, Component, inject, Input, numberAttribute } from '@angular/core';
 import { MtxGridModule } from '@ng-matero/extensions/grid';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTimeUtilityService } from 'app/project/services/date-time-utility.service';
@@ -12,7 +12,7 @@ import { SensorCompenent } from '../sensor-component';
   templateUrl: './radar-ppi.component.html',
   styleUrl: './radar-ppi.component.scss'
 })
-export class RadarPPIComponent extends SensorCompenent {
+export class RadarPPIComponent extends SensorCompenent implements AfterViewInit {
   private readonly translate = inject(TranslateService);
   @Input({ required: true, transform: numberAttribute }) override centerLat!: number;
   @Input({ required: true, transform: numberAttribute }) override centerLng!: number;
@@ -23,6 +23,10 @@ export class RadarPPIComponent extends SensorCompenent {
     private dateTimeUtilityService: DateTimeUtilityService
   ) {
     super();
+  }
+
+  async ngAfterViewInit() {
+    super.ngAfterViewInit();
   }
 
   setColumns(): void {

@@ -8,12 +8,15 @@ import { BaseHttpClientService } from './base-http-client.service';
 @Injectable({
   providedIn: 'root'
 })
-export class GisObjectService extends BaseHttpClientService{
+export class GisObjectService extends BaseHttpClientService {
 
   apiUrl = ConfigService.apiBaseUrl + "/api/gisObject";
 
-  getByScenarioId(scenario_id:number){
-    return this.httpClient.get(this.apiUrl + "/GetGisObjectByScenario_id?scenario_id="+scenario_id);
+  getByScenarioId(scenario_id: number, withObjecttype: boolean = false) {
+    if (withObjecttype)
+      return this.httpClient.get(this.apiUrl + "/GetGisObjectByScenario_id?scenario_id=" + scenario_id + "&withObjecttype=" + withObjecttype);
+    else
+      return this.httpClient.get(this.apiUrl + "/GetGisObjectByScenario_id?scenario_id=" + scenario_id);
   }
 }
 export interface GisObject {
@@ -22,8 +25,8 @@ export interface GisObject {
   name: string,
   scenario_id: number,
   parent_id: number,
-  parent:GisObject | undefined
+  parent: GisObject | undefined
   objectType_id: number,
   objectType: ObjectType,
-  status:string|undefined
+  status: string | undefined
 }

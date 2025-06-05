@@ -329,7 +329,7 @@ export default class MapComponent implements AfterViewInit, OnInit, OnDestroy {
     let self = this;
     let speed = 0;
     if (gisObject.objectType.category.key == "aircraft")
-      speed = 10;
+      speed = 30;
     //----- save scens data-------
     let saveScens = function (observer, object_id) {
       let scenes: Scene[] = [];

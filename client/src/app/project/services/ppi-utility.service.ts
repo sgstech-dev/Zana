@@ -8,7 +8,7 @@ import { DrawingUtilityService } from './drawing-utility.service';
 export class PpiUtilityService {
 
   constructor(
-    private drawingUtilityService:DrawingUtilityService
+    private drawingUtilityService: DrawingUtilityService
   ) { }
 
   public drawPPIAxis(map: L.Map, center: L.LatLng, radius: number) {
@@ -41,6 +41,13 @@ export class PpiUtilityService {
     // Fit the map to the circle bounds
     map.fitBounds(bounds);
   }
+
+  private metersToDegrees(meters: number): number {
+    // تقریبی: هر درجه حدود 111 km
+    return meters / 111000;
+  }
+
+
 
   private drawCrossLine(center: L.LatLng, radius: number, color) {
     // Compute endpoints for "+" cross
@@ -100,10 +107,10 @@ export class PpiUtilityService {
     }, 50); // Reduce opacity every 500ms (total 5s)
   }
 
-  public drawFadingLine(map: L.Map, center: L.LatLng, range: number, theta: number, color: string,threshold:number=0,thresholdColor:any="#00000000") {
+  public drawFadingLine(map: L.Map, center: L.LatLng, range: number, theta: number, color: string, threshold: number = 0, thresholdColor: any = "#00000000") {
     const point = this.destinationPoint(center.lat, center.lng, range, theta);
     // Create a circle with full opacity
-    let sc = this.drawingUtilityService.addSemiCircle(map,center, 0, range, theta - threshold, theta + threshold, thresholdColor, true, false);
+    let sc = this.drawingUtilityService.addSemiCircle(map, center, 0, range, theta - threshold, theta + threshold, thresholdColor, true, false);
     let line = L.polyline([point, [center.lat, center.lng]], {
       color: color,    // Border color
       fillColor: color, // Fill color

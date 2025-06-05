@@ -15,10 +15,10 @@ import { SensorCompenent } from '../sensor-component';
 })
 export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterViewInit {
 
-  @Input({ required: true, transform: numberAttribute }) override centerLat: number;
-  @Input({ required: true, transform: numberAttribute }) override centerLng: number;
-  @Input({ required: true, transform: numberAttribute }) override radius: number;
-  @Input({ required: true }) override sensorName: string;
+  // @Input({ required: true, transform: numberAttribute }) override centerLat: number;
+  // @Input({ required: true, transform: numberAttribute }) override centerLng: number;
+  // @Input({ required: true, transform: numberAttribute }) override radius: number;
+  // @Input({ required: true }) override sensorName: string;
 
   //public directionList: Target[] = [];
   private readonly translate = inject(TranslateService);
@@ -31,7 +31,8 @@ export class SaherPPIComponent extends SensorCompenent implements OnInit, AfterV
   ) {
     super();
   }
-  ngAfterViewInit(): void {
+
+  async ngAfterViewInit() {
     super.ngAfterViewInit();
     this.initSignalR();
   }
