@@ -82,7 +82,11 @@ namespace Server
         public void jammerGonbadiOnOff(string chanelNumber, string state)
         {
             string dataStr = "";
-            UdpClient udpClient = new UdpClient(9001);
+            IPAddress localIPAddress = IPAddress.Parse("192.168.0.26"); // آی‌پی کارت شبکه محلی
+            int localPort = 9001;
+            IPEndPoint localEndPoint = new IPEndPoint(localIPAddress, localPort);
+            UdpClient udpClient = new UdpClient(localEndPoint);
+
             udpClient.EnableBroadcast = true; // فعال‌سازی برادکست
             var endPoint = new IPEndPoint(IPAddress.Parse("192.168.0.43"), 9003);
             try
@@ -180,6 +184,10 @@ namespace Server
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
+        }
+        private void laserOnOff(string name, string state)
+        {
+            
         }
     }
 }

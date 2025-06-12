@@ -10,11 +10,19 @@ import { JaberTemplateComponent } from "../jaber-template/jaber-template.compone
 import { SadidTemplateComponent } from "../sadid-template/sadid-template.component";
 import { JammerGonbadiTemplateComponent } from "../jammer-gonbadi-template/jammer-gonbadi-template.component";
 import { AssignedTarget, AssignedTargetsService } from '@shared/services/assignedTargets';
+import { LaserTemplateComponent } from '../laser-template/laser-template.component';
 
 @Component({
   selector: 'app-operation-page',
   standalone: true,
-  imports: [PageHeaderComponent, OperationTemplateComponent, SaherTemplateComponent, JaberTemplateComponent, SadidTemplateComponent, JammerGonbadiTemplateComponent],
+  imports: [
+    PageHeaderComponent, 
+    OperationTemplateComponent, 
+    SaherTemplateComponent, 
+    JaberTemplateComponent, 
+    SadidTemplateComponent, 
+    JammerGonbadiTemplateComponent,
+    LaserTemplateComponent],
   templateUrl: './operation-page.component.html',
   styleUrl: './operation-page.component.scss',
   changeDetection: ChangeDetectionStrategy.Default
@@ -27,6 +35,7 @@ export default class OperationPageComponent implements OnInit {
 
   gisObjectsAssined: AssignedTarget[] = [];
   @ViewChild('JaberOperator') JaberOperator: JaberTemplateComponent;
+  @ViewChild('LaserOperator') laserOperator: LaserTemplateComponent;
 
   ngOnInit(): void {
     this.initAssigning();
@@ -41,6 +50,9 @@ export default class OperationPageComponent implements OnInit {
       if (value != undefined) {
         if (value.gisObject.objectType.name == "JaberSystem" && this.JaberOperator != undefined) {
           this.JaberOperator.updateTargetList(value.target);
+        }
+        if (value.gisObject.objectType.name == "LaserSystem" && this.laserOperator != undefined) {
+          this.laserOperator.updateTargetList(value.target);
         }
       }
     });

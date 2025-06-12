@@ -11,6 +11,8 @@ namespace OperatorSystems
 
     public abstract class OperatorSystem
     {
+        protected string m_ipAddress;
+        protected int m_port;
         protected GisObject m_gisObject;
         protected int m_startRange;
         protected int m_endRange;
@@ -19,11 +21,15 @@ namespace OperatorSystems
         protected double m_latitude;
         protected double m_longitude;
         protected double m_atitude;
+        private int traceCount = 0;
         protected Dictionary<string, Target> m_targetMap;
         protected IHubContext<Hub> _hubContext;
+        public Target? CurrentTarget { get; set; } = null;
         public Dictionary<string, Target> Targets { get { return m_targetMap; } }
         public OperatorSystem(
             IHubContext<Hub> hubContext,
+            string ipAddress,
+            int port,
             GisObject gisObject,
             int startRange,
             int endRange,
@@ -42,22 +48,58 @@ namespace OperatorSystems
             m_latitude = latitude;
             m_longitude = longitude;
             m_atitude = altitude;
-            _hubContext =  hubContext;
+            _hubContext = hubContext;
+            m_ipAddress = ipAddress;
+            m_port = port;
         }
         protected abstract void Execute(Target target);
         public abstract void StopExecution(Target target);
         public abstract void SendReportToClients(Target target);
+        public bool IsTargetAssined(Target target)
+        {
+            return (CurrentTarget == null);
+        }
+        protected bool IsEqualTargetAssined(Target target)
+        {
+            if ((CurrentTarget == null) || (CurrentTarget.TargetId == target.TargetId))
+                return true;
+            return false;
+        }
+        protected virtual void SendTargetToDevice(Target target)
+        {
+
+        }
         public void MakeDecision(Target target)
         {
             if (checkTargetInZones(target))
             {
-                if (!m_targetMap.ContainsKey(target.TargetId))
+                if (IsEqualTargetAssined(target))
                 {
-                    Execute(target);// شرایط عمل کردن و اینکه این سامانه در حالت لاک بماند تا عملش تموم بشه و اولویت اهداف تخصیص داده شده برای عمل باید پیاده سازی بشه
-                    SendReportToClients(target);
+                    if (target.TargetType == TargetType.Position)
+                    {
+                        SendTargetToDevice(target);
+                        CurrentTarget = target;
+                        traceCount = 0;
+                    }
                 }
+                else
+                {
+                    if (target.TargetType == TargetType.Position)
+                        traceCount++;
+                }
+                if (traceCount > 2)
+                {
+                    CurrentTarget = null;
+                }
+                if (!m_targetMap.ContainsKey(target.TargetId))
+                    {
+                        Execute(target);// شرایط عمل کردن و اینکه این سامانه در حالت لاک بماند تا عملش تموم بشه و اولویت اهداف تخصیص داده شده برای عمل باید پیاده سازی بشه
+
+                    }
                 if ((target != null) && (target.TargetId != null))
                     m_targetMap[target.TargetId] = target;
+                if ((target != null))
+                    SendReportToClients(target);
             }
             else
             {
@@ -65,6 +107,8 @@ namespace OperatorSystems
                 {
                     RemoveTarget(target);
                     StopExecution(target);
+                    if (IsEqualTargetAssined(target))
+                        CurrentTarget = null;
                 }
             }
         }

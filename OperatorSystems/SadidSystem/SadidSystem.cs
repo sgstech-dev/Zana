@@ -9,7 +9,7 @@ namespace Server.DecisionService;
 public class SadidSystem : OperatorSystem
 {
    // private readonly IMoonContext _moonContext;
-    public SadidSystem(IHubContext<Hub> hubContext,GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude/*,IMoonContext moonContext*/) : base(hubContext,gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public SadidSystem(IHubContext<Hub> hubContext,string ipAddress,int port,GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude/*,IMoonContext moonContext*/) : base(hubContext,ipAddress,port,gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
        // _moonContext = moonContext;
     }

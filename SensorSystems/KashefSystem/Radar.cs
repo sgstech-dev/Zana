@@ -39,14 +39,16 @@ public class Radar : SensorSystem
                         var radarTarget = JsonConvert.DeserializeObject<Dictionary<string, Object>>(receivedString)!;
                         if (radarTarget != null)
                         {
+                            GeoPoint p = GisUtil.GetLastPosition(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, Convert.ToDouble(radarTarget!["Azm"]), Convert.ToDouble(radarTarget!["Range"]));
+                            
                             if (!TargetIds.ContainsKey(radarTarget!["TargetID"].ToString()!))
                                 TargetIds[radarTarget!["TargetID"].ToString()!] = Guid.NewGuid();
                             Target target = new Target
                             {
                                 Altitude = Convert.ToDouble(radarTarget!["Alt"]),
                                 Heading = 0,//radarTarget!.Heading,
-                                Latitude = Convert.ToDouble(radarTarget!["Lat"]),
-                                Longitude = Convert.ToDouble(radarTarget!["Lng"]),
+                                Latitude = p.lat,//Convert.ToDouble(radarTarget!["Lat"]),
+                                Longitude = p.lon,// Convert.ToDouble(radarTarget!["Lng"]),
                                 Speed = Convert.ToDouble(radarTarget!["Speed"]),
                                 TargetType = TargetType.Position,
                                 Simulated = false,

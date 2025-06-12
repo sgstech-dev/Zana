@@ -7,7 +7,7 @@ namespace Server.DecisionService;
 
 public class SaherSystem : OperatorSystem
 {
-    public SaherSystem(IHubContext<Hub> hubContext, GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(hubContext, gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
+    public SaherSystem(IHubContext<Hub> hubContext,string ipAddress,int port, GisObject gisObject, int startRange, int endRange, double startAngle, double endAngle, double latitude, double longitude, double altitude) : base(hubContext,ipAddress,port, gisObject, startRange, endRange, startAngle, endAngle, latitude, longitude, altitude)
     {
     }
 

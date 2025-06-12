@@ -9,7 +9,7 @@ public struct GeoPoint{
 }
 public class GisUtil
 {
-    double EARTHRADIUSE = 6371e3; 
+    static double EARTHRADIUSE = 6371e3;
     private const double EarthRadius = 6371000;
 
     public static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
@@ -28,7 +28,7 @@ public class GisUtil
         return R * c; // Distance in meters
     }
 
-    public GeoPoint GetLastPosition(double originLat,double originLng, double bearing, double range)
+    public static GeoPoint GetLastPosition(double originLat, double originLng, double bearing, double range)
     {
         double latInRadian = toRadians(originLat);
         double lngInRadian = toRadians(originLng);
@@ -97,7 +97,7 @@ public class GisUtil
             end = states[i + 1];
 
             // Calculate the time it takes to reach the end state
-            
+
             double distance = GisUtil.CalculateDistance(start.Latitude, start.Longitude, end.Latitude, end.Longitude);
             double segmentDuration = distance / start.Speed; // Time to travel from start to end at current speed
 
@@ -127,7 +127,7 @@ public class GisUtil
 
         // Interpolate speed
         double interpolatedSpeed = start.Speed + (end.Speed - start.Speed) * interpolationFactor;
-        double heading = bearing(start.Latitude,start.Longitude,end.Latitude,end.Longitude);
+        double heading = bearing(start.Latitude, start.Longitude, end.Latitude, end.Longitude);
         return (false, new Scene
         {
             Id = start.Id,
@@ -140,6 +140,34 @@ public class GisUtil
             Speed = interpolatedSpeed,
             StartTime = 0
         });
-       // return (true,null);
+        // return (true,null);
+    }
+    
+    public static double GetElevationAngle(double lat1, double lon1, double alt1,
+                                           double lat2, double lon2, double alt2)
+    {
+        double horizontalDistance = GetHaversineDistance(lat1, lon1, lat2, lon2);
+        double deltaAlt = alt2 - alt1;
+
+        // محاسبه زاویه بر حسب رادیان
+        double angleRad = Math.Atan2(deltaAlt, horizontalDistance);
+
+        // تبدیل به درجه
+        return angleRad * (180.0 / Math.PI);
+    }
+
+    private static double GetHaversineDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        double radLat1 = toRadians(lat1);
+        double radLat2 = toRadians(lat2);
+        double dLat = radLat2 - radLat1;
+        double dLon = toRadians(lon2 - lon1);
+
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                   Math.Cos(radLat1) * Math.Cos(radLat2) *
+                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return EarthRadius * c ;
     }
 }

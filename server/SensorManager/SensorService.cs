@@ -161,7 +161,7 @@ public class SensorService
         {
             _decisionBuilder.MakeDecision(target);
             //just for test
-            AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
+           // AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
         }
     }
 

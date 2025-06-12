@@ -37,7 +37,8 @@ public class DecisionBuilder
             double? startAngle = null;
             double? endAngle = null;
             bool IsOperator = false;
-
+            string IpAddress = "";
+            int port = 0;
             var gisObjectState = await db.Scene.Where(s => s.GisObjectId == gisObject.Id).FirstOrDefaultAsync();
             var metadatas = await db.GisObjectMetaDatas.Include("Field").Where(gom => gom.Object_id == gisObject.Id).ToListAsync();
             foreach (var metadata in metadatas)
@@ -59,6 +60,12 @@ public class DecisionBuilder
                     case "IsOperator":
                         IsOperator = bool.Parse(metadata.Value);
                         break;
+                    case "IpAddress":
+                        IpAddress = metadata.Value;
+                        break;
+                    case "Port":
+                        port = int.Parse(metadata.Value);
+                        break;
                     default:
                         break;
                 }
@@ -68,7 +75,7 @@ public class DecisionBuilder
             {
                 if (startAngle != null && endAngle != null && startRange != null && endRange != null && IsOperator)
                 {
-                    operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext, gisObject,
+                    operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/" + gisObject.ObjectType!.Name + ".dll", _hubContext,IpAddress,port, gisObject,
                         startRange.Value,
                         endRange.Value,
                         startAngle.Value,
@@ -78,7 +85,7 @@ public class DecisionBuilder
                         gisObjectState!.Altitude);
                     if (operatorSystem == null)
                     {
-                        operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/DefaultSystem.dll", _hubContext, gisObject,
+                        operatorSystem = loadSystem(_configuration["Appsettings:OperatorSystemLibPath"] + "/DefaultSystem.dll", _hubContext,IpAddress,port, gisObject,
                             startRange.Value,
                             endRange.Value,
                             startAngle.Value,
@@ -125,6 +132,7 @@ public class DecisionBuilder
     {
         foreach (var item in OperatorSystems)
         {
+            
             item.Value.MakeDecision(target);
         }
     }
