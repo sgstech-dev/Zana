@@ -40,4 +40,9 @@ public class DefaultSystem : OperatorSystem
     {
         Console.WriteLine("Target <" + target.TargetId + "> is finished operation by " + m_gisObject.Name);
     }
+
+    public override void CallCommand(string command, params object[] args)
+    {
+        return;
+    }
 }

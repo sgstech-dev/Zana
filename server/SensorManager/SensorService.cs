@@ -77,6 +77,7 @@ public class SensorService
             var gisScene = db.Scene.Where(s => s.GisObjectId == gisObject.Id).FirstOrDefault();
             gisObject.LastLatitude = gisScene!.Latitude;
             gisObject.LastLongitude = gisScene!.Longitude;
+            gisObject.LastAltitude = gisScene!.Altitude;
 
             var metadatas = await db.GisObjectMetaDatas.Include("Field").Where(gom => gom.Object_id == gisObject.Id).ToListAsync();
             foreach (var metadata in metadatas)
@@ -161,7 +162,7 @@ public class SensorService
         {
             _decisionBuilder.MakeDecision(target);
             //just for test
-           // AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
+            AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
         }
     }
 

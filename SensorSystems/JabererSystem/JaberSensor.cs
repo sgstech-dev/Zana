@@ -7,7 +7,7 @@ namespace JaberSystem;
 public class JaberSensor : SensorSystem
 {
     private bool isListenning = false;
-    public JaberSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange) : base(hubContext, sensorObject, IpAddress, Port,maxrange)
+    public JaberSensor(IHubContext<Hub> hubContext, GisObject sensorObject, string IpAddress, int Port, double maxrange) : base(hubContext, sensorObject, IpAddress, Port, maxrange)
     {
     }
 
@@ -40,4 +40,5 @@ public class JaberSensor : SensorSystem
 
         base.PushData(target, ipAddress);
     }
+    
 }

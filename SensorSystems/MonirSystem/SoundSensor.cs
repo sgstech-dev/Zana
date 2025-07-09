@@ -98,14 +98,15 @@ public class SoundSensor : SensorSystem
                     result = GisUtil.Interpolate(target_states, time);
                     var dist = GisUtil.CalculateDistance(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
                     var theta = GisUtil.bearing(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
+                    var elevation = GisUtil.GetElevationAngle(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, m_sensorObject.LastAltitude, result.targetState!.Latitude, result.targetState.Longitude, result.targetState.Altitude);
                    // if (dist > m_maxrange)
-                   //     continue;
+                    //     continue;
                     try
                     {
                         Target simulatedtarget = new Target
                         {
-                            Theta = theta,
-                            Elevation = 0,
+                            Theta = theta + GisUtil.getRandomValue(-4, 4),
+                            Elevation = elevation,
                             DetectedTime = DateTime.Now,
                             TargetType = TargetType.Direction,
                             Simulated = true,

@@ -11,7 +11,7 @@ using Server.models;
 using Server.ScenarioManager;
 using Server.SensorManager;
 using Server.Tools;
-using WebSocketsSample.MoonSocket;
+using MoonSocket;
 
 namespace Server
 {
@@ -77,53 +77,8 @@ namespace Server
                 .Include("GisObject.ObjectType.Category")
                 .Where(s => s.GisObject!.Scenario_id == scenario_id && s.GisObject.ObjectType!.Category!.Key != "aircraft").ToList();
         }
-
-        // -- Send to JammerGonbadi
-        public void jammerGonbadiOnOff(string chanelNumber, string state)
-        {
-            string dataStr = "";
-            IPAddress localIPAddress = IPAddress.Parse("192.168.0.26"); // آی‌پی کارت شبکه محلی
-            int localPort = 9001;
-            IPEndPoint localEndPoint = new IPEndPoint(localIPAddress, localPort);
-            UdpClient udpClient = new UdpClient(localEndPoint);
-
-            udpClient.EnableBroadcast = true; // فعال‌سازی برادکست
-            var endPoint = new IPEndPoint(IPAddress.Parse("192.168.0.43"), 9003);
-            try
-            {
-                if (chanelNumber == "All")
-                {
-                    if (state == "On")
-                    {
-                        dataStr = "AA550000000000000000000000000000000000000000FFFF0000000055BB";
-                    }
-                    if (state == "Off")
-                    {
-                        dataStr = "AA55000000000000000000000000000000000000000000000000000055BB";
-                    }
-                    byte[] data = HexStringToByteArray(dataStr);
-
-                    udpClient.Send(data, data.Length, endPoint);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                udpClient.Close();
-            }
-        }
-
         // -- Send to Sadid
-        public void bandTurnOnOff(string bandNumber, string state)
-        {
-            List<Parameter> parameters = new List<Parameter>();
-            parameters.Add(new Parameter { ParamName = "BandNumber", Value = bandNumber });
-            parameters.Add(new Parameter { ParamName = "State", Value = state });
-            _moonContext.All.Invoke("bandTurnOnOff", parameters.ToArray());
-        }
+        
 
         //-- Sent do Saher 
         public void saher_TurnOn_Off(string JammerName)

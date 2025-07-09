@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Server;
 using Server.Tools;
 using System.Runtime.InteropServices.Marshalling;
+using System.Net;
 
 namespace OperatorSystems
 {
@@ -92,10 +93,10 @@ namespace OperatorSystems
                     CurrentTarget = null;
                 }
                 if (!m_targetMap.ContainsKey(target.TargetId))
-                    {
-                        Execute(target);// شرایط عمل کردن و اینکه این سامانه در حالت لاک بماند تا عملش تموم بشه و اولویت اهداف تخصیص داده شده برای عمل باید پیاده سازی بشه
+                {
+                    Execute(target);// شرایط عمل کردن و اینکه این سامانه در حالت لاک بماند تا عملش تموم بشه و اولویت اهداف تخصیص داده شده برای عمل باید پیاده سازی بشه
 
-                    }
+                }
                 if ((target != null) && (target.TargetId != null))
                     m_targetMap[target.TargetId] = target;
                 if ((target != null))
@@ -122,9 +123,17 @@ namespace OperatorSystems
             var bearing = GisUtil.bearing(m_latitude, m_longitude, target.Latitude, target.Longitude);
             return (dist > m_startRange && dist < m_endRange && bearing > m_startAngle && bearing < m_endAngle);
         }
-        public virtual void CallCommand(string command, params object[] args)
+        public abstract void CallCommand(string command, params object[] args);
+
+        public string getLocalIpAddress()
         {
-            return;
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    return ip.ToString();
+            }
+            return "";
         }
     }
 }

@@ -24,5 +24,7 @@ namespace Server.models
         public double LastLatitude { get; set; }
         [NotMapped]
         public double LastLongitude { get; set; }
+        [NotMapped]
+        public double LastAltitude { get; set; }
     }
 }

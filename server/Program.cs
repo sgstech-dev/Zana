@@ -4,11 +4,12 @@ using Server.models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using WebSocketsSample.MoonSocket;
+using MoonSocket;
 using Server.ScenarioManager;
 using Server.DecisionService;
 using Server.SensorManager;
 using Microsoft.AspNetCore.SignalR;
+using Server.MoonSocket;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -57,12 +58,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Add MoonSocket Service
 builder.Services.AddScoped<IMoonContext, MoonContext<ClientHub>>();
-builder.Services.AddSingleton<IMoonContext, MoonContext<ClientHub>>(provider =>
-{
-    var hubContext = provider.GetRequiredService<IHubContext<ServerHub>>();
-    return new MoonContext<ClientHub>(hubContext);
-});
-
+builder.Services.AddSingleton<IMoonContext, MoonContext<ClientHub>>();
 
 builder.Services.AddSingleton<WGDBContextFactory>();
 builder.Services.AddScoped<IScenarioService,ScenarioService>();

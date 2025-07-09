@@ -86,4 +86,9 @@ public class LaserSystem : OperatorSystem
     {
         return base.checkTargetInZones(target);
     }
+
+    public override void CallCommand(string command, params object[] args)
+    {
+        return;
+    }
 }

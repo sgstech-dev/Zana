@@ -142,7 +142,7 @@ public class GisUtil
         });
         // return (true,null);
     }
-    
+
     public static double GetElevationAngle(double lat1, double lon1, double alt1,
                                            double lat2, double lon2, double alt2)
     {
@@ -168,6 +168,12 @@ public class GisUtil
                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
         double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        return EarthRadius * c ;
+        return EarthRadius * c;
+    }
+
+    public static double getRandomValue(double min, double max)
+    {
+        Random random = new Random();
+        return min + (random.NextDouble() * (max - min));
     }
 }

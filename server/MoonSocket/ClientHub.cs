@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Server;
 using Server.models;
 using Server.SensorManager;
+using MoonSocket;
 
-namespace WebSocketsSample.MoonSocket;
+namespace Server.MoonSocket;
 
 struct TargetData
 {
@@ -15,6 +16,23 @@ struct TargetData
 }
 public class ClientHub : Client
 {
+    WGDBContext? _WGDBContext;
+    SensorService? _SensorService;
+    IHubContext<ServerHub>? _HubContext;
+
+    public ClientHub()
+    {
+        OnCreateClient += CreateClient;
+        
+    }
+
+    private void CreateClient()
+    {
+        _HubContext = ServiceProvider.GetRequiredService<IHubContext<ServerHub>>();
+        _SensorService = ServiceProvider.GetRequiredService<SensorService>();
+        var dbFactory = ServiceProvider.GetRequiredService<WGDBContextFactory>();
+        _WGDBContext = dbFactory.CreateDbContext();
+    }
     public string SendMessage(string message)
     {
         Console.WriteLine("Message1 -------------> " + message);
@@ -23,7 +41,7 @@ public class ClientHub : Client
 
     public object? getGisObjects(Int64 scenario_id)
     {
-        return DbContext?.Scene
+        return _WGDBContext?.Scene
             .Include(s => s.GisObject)
             .ThenInclude(g => g!.ObjectType)
             .ThenInclude(o => o!.Category)
@@ -68,7 +86,7 @@ public class ClientHub : Client
     {
         Console.WriteLine(">>-----------------------------------> " + id);
         TargetData result = new();
-        result.gisObject = DbContext?.GisObjects
+        result.gisObject = _WGDBContext?.GisObjects
             .Include(g => g!.ObjectType)
             .ThenInclude(c => c!.Category)
             .Where(o => o.Id == id)
@@ -98,12 +116,12 @@ public class ClientHub : Client
                 }
             })
             .FirstOrDefault()!;
-        result.gisObjectMetaData = DbContext?.GisObjectMetaDatas.Where(gmd => gmd.Object_id == id).Include("Field").ToList()!;
+        result.gisObjectMetaData = _WGDBContext?.GisObjectMetaDatas.Where(gmd => gmd.Object_id == id).Include("Field").ToList()!;
         return result;
     }
     public string getGisPic(Int64 objectType_id)
     {
-        var data = DbContext?.ObjectTypes
+        var data = _WGDBContext?.ObjectTypes
             .Where(o => o.Id == objectType_id)
             .Select(o => o.PicBase64).FirstOrDefault();
         return data?.Split(',')[1]!;
@@ -111,14 +129,14 @@ public class ClientHub : Client
     public string getGisIcon(Int64 objectType_id)
     {
 
-        var Data = DbContext?.ObjectTypes
+        var Data = _WGDBContext?.ObjectTypes
             .Where(o => o.Id == objectType_id)
             .Select(o => o.IconBase64).FirstOrDefault();
         return Data?.Split(',')[1]!;
     }
     public byte[] getGisModel(Int64 objectType_id)
     {
-        return DbContext?.ObjectTypes
+        return _WGDBContext?.ObjectTypes
             .Where(o => o.Id == objectType_id)
             .Select(o => o.Model).FirstOrDefault()!;
     }
@@ -135,18 +153,18 @@ public class ClientHub : Client
         target.CenterFreq = centerFreq;
         target.Range = distance;
         target.TargetType = TargetType.Direction;
-        SensorService?.PushData(target, IpAddress);
+        _SensorService?.PushData(target, IpAddress);
     }
 
     public void JammerAndMotorStatus(bool motor, bool jammer2_4, bool jammer5_8, bool jammer400, bool jammer900, bool jammersGPS, bool autoControl)
     {
         Console.WriteLine("Mottor state: " + motor + " Jammer2.4  state: " + jammer2_4 + " Jammer5.8  state: " + jammer5_8 + " Jammer400  state: " + jammer400 + " Jammer900 state: " + jammer900 + " JammerGPS  state: " + jammersGPS + " AutoControl  state: " + autoControl);
-        HubContext.Clients.All.SendAsync("jammersAndMotorStatus", motor, jammer2_4, jammer5_8, jammer400, jammer900, jammersGPS, autoControl).Wait();
+        _HubContext?.Clients.All.SendAsync("jammersAndMotorStatus", motor, jammer2_4, jammer5_8, jammer400, jammer900, jammersGPS, autoControl).Wait();
     }
     //call from Jaber System
     public void JaberState(bool State)
     {
-        HubContext.Clients.All.SendAsync("JaberState", State).Wait();
+        _HubContext?.Clients.All.SendAsync("JaberState", State).Wait();
     }
 
     public void sendTargetInfo(string UUID, string QuadAlt, string SerialNumber, string QuadLat, string QuadLong, string QuadHeight, string HomeLat, string HomeLong, string Type, string PilotLat, string PilotLong, string QuadSpeedLat, string QuadSpeedHeight, string QuadSpeedLong, string Date, string Time, bool EnableHunted)
@@ -164,13 +182,13 @@ public class ClientHub : Client
             EnableHunted = EnableHunted
         };
 
-        SensorService?.PushData(target, IpAddress);
+        _SensorService?.PushData(target, IpAddress);
     }
 
     //Call from Sadid
     public void SadidState(bool State)
     {
-        HubContext.Clients.All.SendAsync("SadidState", State).Wait();
+        _HubContext?.Clients.All.SendAsync("SadidState", State).Wait();
         Console.WriteLine("Sayad state is : " + State);
     }
 }

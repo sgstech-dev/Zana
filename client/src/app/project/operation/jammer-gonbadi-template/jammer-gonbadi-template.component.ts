@@ -95,60 +95,65 @@ export class JammerGonbadiTemplateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  Chanel1Togle() {
-    this.Chanel1 = !this.Chanel1;
-    console.log("Chanel1:", this.Chanel1);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel1",this.Chanel1?"On":"Off").then(() =>{
-      this.setStateOperators(false);
+  ChanelTogle(ChanelName:string) {
+    this[ChanelName] = !this[ChanelName];
+    SignalRService.getConnection().invoke("callCommand", {
+      commandName: "jammerGonbadiOnOff",
+      gisObjectId: this.gisObject.id,
+      args: [
+        ChanelName,
+        this[ChanelName] ? "On" : "Off"
+      ]
+    }).then(() => {
+    //  this.setStateOperators(false);
     });
   }
 
-  Chanel2Togle() {
-    this.Chanel2 = !this.Chanel2;
-    console.log("Chanel2:", this.Chanel2);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel2",this.Chanel2?"On":"Off").then(() =>{
-      this.setStateOperators(false);
-    });
-  }
+  // Chanel2Togle() {
+  //   this.Chanel2 = !this.Chanel2;
+  //   console.log("Chanel2:", this.Chanel2);
+  //   SignalRService.getConnection().invoke("jammerGonbadiOnOff", "Chanel2", this.Chanel2 ? "On" : "Off").then(() => {
+  //     this.setStateOperators(false);
+  //   });
+  // }
 
-  Chanel3Togle() {
-    this.Chanel3 = !this.Chanel3;
-    console.log("Chanel3:", this.Chanel3);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel3",this.Chanel3?"On":"Off").then(() =>{
-      this.setStateOperators(false);
-    });
-  }
+  // Chanel3Togle() {
+  //   this.Chanel3 = !this.Chanel3;
+  //   console.log("Chanel3:", this.Chanel3);
+  //   SignalRService.getConnection().invoke("jammerGonbadiOnOff", "Chanel3", this.Chanel3 ? "On" : "Off").then(() => {
+  //     this.setStateOperators(false);
+  //   });
+  // }
 
-  Chanel4Togle() {
-    this.Chanel4 = !this.Chanel4;
-    console.log("Chanel4:", this.Chanel4);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel4",this.Chanel4?"On":"Off").then(() =>{
-      this.setStateOperators(false);
-    });
-  }
+  // Chanel4Togle() {
+  //   this.Chanel4 = !this.Chanel4;
+  //   console.log("Chanel4:", this.Chanel4);
+  //   SignalRService.getConnection().invoke("jammerGonbadiOnOff", "Chanel4", this.Chanel4 ? "On" : "Off").then(() => {
+  //     this.setStateOperators(false);
+  //   });
+  // }
 
-  Chanel5Togle() {
-    this.Chanel5 = !this.Chanel5;
-    console.log("Chanel5:", this.Chanel5);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel5",this.Chanel5?"On":"Off").then(() =>{
-      this.setStateOperators(false);
-    });
-  }
+  // Chanel5Togle() {
+  //   this.Chanel5 = !this.Chanel5;
+  //   console.log("Chanel5:", this.Chanel5);
+  //   SignalRService.getConnection().invoke("jammerGonbadiOnOff", "Chanel5", this.Chanel5 ? "On" : "Off").then(() => {
+  //     this.setStateOperators(false);
+  //   });
+  // }
 
-  Chanel6Togle() {
-    this.Chanel6 = !this.Chanel6;
-    console.log("Chanel6:", this.Chanel6);
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","Chanel6",this.Chanel6?"On":"Off").then(() =>{
-      this.setStateOperators(false);
-    });
-  }
+  // Chanel6Togle() {
+  //   this.Chanel6 = !this.Chanel6;
+  //   console.log("Chanel6:", this.Chanel6);
+  //   SignalRService.getConnection().invoke("jammerGonbadiOnOff", "Chanel6", this.Chanel6 ? "On" : "Off").then(() => {
+  //     this.setStateOperators(false);
+  //   });
+  // }
 
   AllChanelTogle() {
-    this.AllChanel = !this.AllChanel;
+    //this.AllChanel = !this.AllChanel;
     console.log("All Chanel");
-    
-    SignalRService.getConnection().invoke("jammerGonbadiOnOff","All",this.AllChanel?"On":"Off").then(() =>{
-      this.setStateOperators(this.AllChanel);
-    });
+
+    this.ChanelTogle("AllChanel");
+    this.setStateOperators(this.AllChanel);
   }
 }

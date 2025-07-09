@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OperatorSystems;
 using Server.models;
-using WebSocketsSample.MoonSocket;
+using MoonSocket;
 
 namespace Server.DecisionService;
 

@@ -42,4 +42,9 @@ public class JaberSystem : OperatorSystem
     {
         return (target.Detector_id == m_gisObject.Id) && target.EnableHunted;
     }
+
+    public override void CallCommand(string command, params object[] args)
+    {
+        return;
+    }
 }
