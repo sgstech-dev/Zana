@@ -10,6 +10,7 @@ using Server.DecisionService;
 using Server.SensorManager;
 using Microsoft.AspNetCore.SignalR;
 using Server.MoonSocket;
+using Server.models.voiceChat;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -64,7 +65,10 @@ builder.Services.AddSingleton<WGDBContextFactory>();
 builder.Services.AddScoped<IScenarioService,ScenarioService>();
 builder.Services.AddSingleton<ScenarioService>();
 builder.Services.AddSingleton<DecisionBuilder>();
-
+//add voicechat singleton
+builder.Services.AddSingleton<List<Server.models.voiceChat.User>>();
+builder.Services.AddSingleton<List<UserCall>>();
+builder.Services.AddSingleton<List<CallOffer>>();
 
 var webSocketOptions = new WebSocketOptions
 {
@@ -86,4 +90,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<ServerHub>("/serverHub");
+app.MapHub<VoiceChatHub>("/voiceChatHub");
 app.Run();

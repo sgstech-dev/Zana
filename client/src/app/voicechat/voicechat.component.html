@@ -1,0 +1,53 @@
+<header>
+  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container">
+      <div class="collapse navbar-collapse">
+        <span class="navbar-text text-right title-bar">
+          <span id="upperUsername"></span>
+        </span>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="container">
+  <div class="row-fluid">
+    <!-- Side Bar -->
+    <div class="span3">
+
+      <!-- User List -->
+      <div>
+        <mat-form-field appearance="outline" class="current-scenario-frame full-width">
+          <mat-label>Online Users <small id="usersLength"></small></mat-label>
+          <mat-select [(value)]="partnerConnectionId" [disabled]="currentCallingUser">
+            @for (item of updatedUserList; track $index) {
+            <mat-option value={{item.connectionId}} [disabled]="item.username == username">{{item.username}}<span>{{item.inCall?' In
+                Call...':''}}</span></mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="calling-state">
+        <h4>{{currentCallingUser?currentCallingUser?.username + " is calling
+          ...":(currentCallingMode==CallingMode.Calling)?"Calling user... ":""}} </h4>
+      </div>
+      <div class="calling-btns-container">
+        <button class="btn btn-danger cancel-call" (click)="RejectCall()" [hidden]="!currentCallingUser"></button>
+        <span class="btn-seperator">  </span>
+        <button class="btn btn-primary accept-call" (click)="AnswerCall()" [hidden]="!currentCallingUser"></button>
+        <button class="btn btn-primary call" (click)="callUser(partnerConnectionId)"
+          [hidden]="(currentCallingMode != CallingMode.Idel) || (currentCallingUser != undefined) "
+          [disabled]="!partnerConnectionId"></button>
+        <button id="hangupBtn" class="btn btn-danger hangup" [hidden]="currentCallingMode == CallingMode.Idel "
+          (click)="HangUp()"></button>
+      </div>
+    </div>
+    <!-- Videos -->
+    <div class="span9">
+      <div class="row-fluid">
+        <div class="span6">
+          <audio id="audio-partner" class="audio partner" autoplay="" controls=""></audio>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

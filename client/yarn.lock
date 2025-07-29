@@ -2743,6 +2743,11 @@ ajv@8.13.0:
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
 
+alertifyjs@^1.14.0:
+  version "1.14.0"
+  resolved "https://registry.npmjs.org/alertifyjs/-/alertifyjs-1.14.0.tgz"
+  integrity sha512-jUxJTcNYhJ2P1Wal73nmyTwMkaPim4PjZP9CAG+S8SK2SinraXxvOxnPrEY81/wc2iBPDFBP7mdg61db4WsuHQ==
+
 angular-cli-ghpages@^2.0.1:
   version "2.0.3"
   resolved "https://registry.npmjs.org/angular-cli-ghpages/-/angular-cli-ghpages-2.0.3.tgz"
@@ -6330,6 +6335,11 @@ leaflet-rotatedmarker@^0.2.0:
   resolved "https://registry.npmjs.org/leaflet-rotatedmarker/-/leaflet-rotatedmarker-0.2.0.tgz"
   integrity sha512-yc97gxLXwbZa+Gk9VCcqI0CkvIBC9oNTTjFsHqq4EQvANrvaboib4UdeQLyTnEqDpaXHCqzwwVIDHtvz2mUiDg==
 
+leaflet-ruler@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/leaflet-ruler/-/leaflet-ruler-1.0.0.tgz"
+  integrity sha512-5Ti99czL+hhcd5rMmT5JBkDvzErPUM+ogJbP6NDzJEMK5vCGqS9/1BrMpVeCcCaxViSWLPf9qcXRGcGO85UCZA==
+
 leaflet-semicircle@^2.0.4:
   version "2.0.4"
   resolved "https://registry.npmjs.org/leaflet-semicircle/-/leaflet-semicircle-2.0.4.tgz"
@@ -6349,6 +6359,11 @@ leaflet.marker.highlight@^0.0.3:
   version "0.0.3"
   resolved "https://registry.npmjs.org/leaflet.marker.highlight/-/leaflet.marker.highlight-0.0.3.tgz"
   integrity sha512-tCJ6jTCvi9L31d3IIvOFSyJDWNJwhGp1J9QTTxUTFxxz+JpDDFoWyvt4OQlCYZpQs9b+yPWCzeQVm9t8k5iHJg==
+
+leaflet.mousecoordinate@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/leaflet.mousecoordinate/-/leaflet.mousecoordinate-1.2.0.tgz"
+  integrity sha512-FfeHcNOgAsfmkjC9/Wa6XwoJFhu8yUCVCX5oFi9BoWF06OT2Qv3WHtl7T4a35t7kRjQH3T/0tuqZDbvojCv8fg==
 
 leaflet.mouseposition.ts@^0.1.3:
   version "0.1.3"

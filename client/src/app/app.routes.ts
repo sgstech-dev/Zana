@@ -11,6 +11,7 @@ import { RegisterComponent } from './routes/sessions/register/register.component
 import MapComponent from './project/map/map.component';
 import OperationPageComponent from './project/operation/operation-page/operation-page.component';
 import SensorPageComponent from './project/sensors/sensor-page/sensor-page.component';
+import { VoicechatComponent } from './voicechat/voicechat.component';
 
 export const routes: Routes = [
   {
@@ -86,6 +87,10 @@ export const routes: Routes = [
       { path: 'register', component: RegisterComponent },
       { path: 'map', component: MapComponent },
     ],
+  },
+  {
+    path: 'voiceChat',
+    component: VoicechatComponent
   },
   { path: '**', redirectTo: 'map' },
 ];

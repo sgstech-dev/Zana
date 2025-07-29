@@ -162,7 +162,7 @@ public class SensorService
         {
             _decisionBuilder.MakeDecision(target);
             //just for test
-            AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
+         //   AppendTargetToFile(target, "/home/sgs-developer-1/projects/Zana/DataForTest/data.txt").Wait();
         }
     }
 
@@ -176,10 +176,12 @@ public class SensorService
         };
         using (StreamWriter writer = new StreamWriter(filePath, append: true))
         {
+            var tmp = target.Detector;
             target.Detector = null;
-            string json = JsonConvert.SerializeObject(target,settings);
+            string json = JsonConvert.SerializeObject(target, settings);
             await writer.WriteLineAsync(json);
             await writer.FlushAsync(); // تضمین نوشته‌شدن
+            target.Detector = tmp;
         }
     }
 

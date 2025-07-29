@@ -1,0 +1,58 @@
+.call{
+  background-image: url(/images/icons/call.png);
+  background-size: cover;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+.hangup{
+  background-image: url(/images/icons/hangup.png);
+  background-size: cover;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+.accept-call{
+  background-image: url(/images/icons/acceptCall.png);
+  background-size: cover;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+.cancel-call{
+  background-image: url(/images/icons/cancelCall.png);
+  background-size: cover;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+.btn-seperator{
+  width: 10px;
+  display: inline-block;
+}
+.full-width{
+  width: 100%;
+}
+.title-bar{
+  height: 50px;
+  background-color: #133466;
+  box-shadow: 2px 5px 4px black;
+  margin-bottom: 17px;
+  text-align: center !important;;
+  padding-top: 10px;
+  font-size: larger;
+  font-weight: bolder;
+  text-shadow: 1px 3px 3px black;
+  display: block;
+}
+.calling-state{
+  text-align: center;
+  text-shadow: 2px 2px 2px black;
+}
+.calling-btns-container{
+  text-align: center;
+  padding: 20px;
+}
+.audio{
+  width: 100%;
+}

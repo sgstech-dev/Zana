@@ -7,37 +7,45 @@ import { HubConnectionState } from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class SignalRService {
-  private static connection: signalR.HubConnection = undefined;
+  private static connections: Map<string, signalR.HubConnection> = new Map<string, signalR.HubConnection>;
 
   constructor() { }
-  public static startConnection(): Promise<void> {
-    if (!SignalRService.connection) {
-      SignalRService.connection = new signalR.HubConnectionBuilder()
-        .withUrl(ConfigService.apiBaseUrl + "/serverHub", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+  public static startConnection(hubURL: string = "serverHub"): Promise<void> {
+    let connection: signalR.HubConnection;
+    if (!SignalRService.connections.has(hubURL)) {
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl(ConfigService.apiBaseUrl + "/" + hubURL, { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
         .withAutomaticReconnect()
         .build();
+      this.connections.set(hubURL, connection);
+      return connection.start();
     }
-    SignalRService.connection.onclose(error => {
-      console.error("Connection closed", error);
-      // Optional: try to reconnect manually or inform the user
-    });
-    //return SignalRService.connection.start();
-    if (this.connection.state === HubConnectionState.Connected) {
+    else{
+      connection = SignalRService.connections.get(hubURL);
+    }
+    if (connection.state === HubConnectionState.Connected) {
       // Connection is already established
       return Promise.resolve();
     }
-    return SignalRService.connection
-      .start()
-      .then(() => {
-        console.log('Connection started successfully');
-      })
-      .catch(err => {
-        // console.error('Error while starting connection: ', err);
-      });
+    else if (connection.state === HubConnectionState.Disconnected) {
+      connection
+        .start()
+        .then(() => {
+          console.log('Connection started successfully');
+          return Promise.resolve();
+        })
+        .catch(err => {
+          console.error('Error while starting connection: ', err);
+          return Promise.reject(new Error('Error while starting connection.'));
+        });
+    }
+    else {
+      return Promise.resolve();
+    }
+    return Promise.reject(new Error('Unnkown Error!'));
   }
 
-  public static getConnection(): signalR.HubConnection {
-    return this.connection;
+  public static getConnection(hubURL: string = "serverHub"): signalR.HubConnection {
+    return SignalRService.connections.get(hubURL);
   }
 }
-

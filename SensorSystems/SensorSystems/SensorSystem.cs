@@ -60,6 +60,7 @@ public abstract class SensorSystem
             {
                 OnTargetDetected(this, target);
             }
+
             return m_hubContext.Clients.All.SendAsync("sendTarget", target);
         }
         catch (Exception e)
@@ -75,4 +76,24 @@ public abstract class SensorSystem
             relayConnection!.Send(jasonData).Wait();
         }
     }
+    protected bool IsPortAvailable(int port)
+    {
+        bool isAvailable = true;
+
+        System.Net.NetworkInformation.IPGlobalProperties ipGlobalProperties =
+            System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
+        var tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
+
+        foreach (var endpoint in tcpConnInfoArray)
+        {
+            if (endpoint.Port == port)
+            {
+                isAvailable = false;
+                break;
+            }
+        }
+
+        return isAvailable;
+    }
+
 }

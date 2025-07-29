@@ -20,8 +20,16 @@ public class SoundSensor : SensorSystem
     public override Task Listen()
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add($"http://+:{m_port}/");
-        listener.Start();
+        if (int.TryParse(m_port.ToString(), out int port) && port >= 1 && port <= 65535 && IsPortAvailable(port))
+        {
+            listener.Prefixes.Add($"http://+:{port}/");
+            listener.Start();
+        }
+        else
+        {
+            Console.WriteLine("Invalid or unavailable port.");
+            return Task.CompletedTask;
+        }
         return Task.Run(async () =>
         {
             while (true)
@@ -88,7 +96,7 @@ public class SoundSensor : SensorSystem
         base.StartSimulation(targets_States);
         foreach (var target_states in targets_States)
         {
-            Task.Run( () =>
+            Task.Run(() =>
             {
                 double time = 0;// in second
                 Guid TargetId = Guid.NewGuid();
@@ -99,13 +107,13 @@ public class SoundSensor : SensorSystem
                     var dist = GisUtil.CalculateDistance(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
                     var theta = GisUtil.bearing(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, result.targetState!.Latitude, result.targetState.Longitude);
                     var elevation = GisUtil.GetElevationAngle(m_sensorObject.LastLatitude, m_sensorObject.LastLongitude, m_sensorObject.LastAltitude, result.targetState!.Latitude, result.targetState.Longitude, result.targetState.Altitude);
-                   // if (dist > m_maxrange)
+                    // if (dist > m_maxrange)
                     //     continue;
                     try
                     {
                         Target simulatedtarget = new Target
                         {
-                            Theta = theta + GisUtil.getRandomValue(-4, 4),
+                            Theta = theta, //+ GisUtil.getRandomValue(-5, 5),
                             Elevation = elevation,
                             DetectedTime = DateTime.Now,
                             TargetType = TargetType.Direction,

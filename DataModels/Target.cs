@@ -24,7 +24,7 @@ public class Target
     [Required]
     public int Detector_id{ get; set; }
     [ForeignKey("Detector_id")]
-    public virtual GisObject? Detector{ get; set; }
+    public GisObject? Detector{ get; set; }
     public DateTime DetectedTime { get; set; }
     public bool Simulated { get; set; }
     public string DeviceType { get; set; } = "";
